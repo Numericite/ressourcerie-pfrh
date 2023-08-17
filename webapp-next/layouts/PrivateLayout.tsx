@@ -1,9 +1,9 @@
-import { Box } from '@chakra-ui/react';
-import { ReactNode } from 'react';
-import { AiTwotoneHome } from 'react-icons/ai';
-import { BsBook, BsInboxFill, BsPeople } from 'react-icons/bs';
-import Menu from '../components/bo/menu';
-import Head from 'next/head';
+import { Box } from "@chakra-ui/react";
+import { ReactNode } from "react";
+import { AiTwotoneHome } from "react-icons/ai";
+import { BsBook, BsInboxFill, BsNewspaper, BsPeople } from "react-icons/bs";
+import Menu from "../components/bo/menu";
+import Head from "next/head";
 
 export interface MenuItem {
   id: number;
@@ -18,28 +18,34 @@ const PrivateLayout = ({ children }: { children: ReactNode }) => {
   const menuItems: MenuItem[] = [
     {
       id: 1,
-      name: 'Accueil',
+      name: "Accueil",
       icon: <AiTwotoneHome />,
-      link: '/dashboard/bo/home'
+      link: "/dashboard/bo/home",
     },
     {
       id: 2,
-      name: 'Ressources',
+      name: "Ressources",
       icon: <BsBook />,
-      link: '/dashboard/bo/ressources'
+      link: "/dashboard/bo/ressources",
     },
     {
       id: 3,
-      name: 'Contributions',
+      name: "Contributions",
       icon: <BsPeople />,
-      link: '/dashboard/bo/contributions'
+      link: "/dashboard/bo/contributions",
     },
     {
       id: 4,
       name: "Cas d'usage",
       icon: <BsInboxFill />,
-      link: '/dashboard/bo/usecases'
-    }
+      link: "/dashboard/bo/usecases",
+    },
+    {
+      id: 5,
+      name: "Newsletters",
+      icon: <BsNewspaper />,
+      link: "/dashboard/bo/newsletters",
+    },
   ];
 
   return (
@@ -61,7 +67,7 @@ const PrivateLayout = ({ children }: { children: ReactNode }) => {
         ></meta>
         <meta property="og:image" content="/chatbot/cuteRobot_cute.png"></meta>
       </Head>
-      <Box display={'flex'} flexDirection="row">
+      <Box display={"flex"} flexDirection="row">
         <Menu menuItems={menuItems} />
         <Box display="flex" w="full" p={12}>
           {children}

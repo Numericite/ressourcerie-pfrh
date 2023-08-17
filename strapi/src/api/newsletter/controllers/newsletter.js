@@ -55,4 +55,42 @@ module.exports = createCoreController("api::newsletter.newsletter", () => ({
 
     return { data: finalNewsletter, meta };
   },
+  async findOne(ctx) {
+    const { data } = await super.findOne(ctx);
+
+    let ids = data.attributes.ressources.data.map((ressource) => ressource.id);
+
+    const ressources = await strapi
+      .controller("api::ressource.ressource")
+      .customFind({
+        filters: {
+          id: {
+            $in: data.attributes.ressources.data.map(
+              (ressource) => ressource.id
+            ),
+          },
+        },
+        populate: {
+          theme: true,
+          image: true,
+          sub_themes: true,
+          personaes: true,
+          personae_occupations: true,
+        },
+      });
+
+    let finalNewsletter = {
+      ...{
+        ...data,
+        attributes: {
+          ...data.attributes,
+          ressources: ressources.data.filter((ressource) => {
+            return ids.includes(ressource.id);
+          }),
+        },
+      },
+    };
+
+    return { data: finalNewsletter };
+  },
 }));

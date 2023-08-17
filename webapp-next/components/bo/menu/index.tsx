@@ -58,11 +58,20 @@ const Menu = (props: MenuProps) => {
     >
       <Box display="flex" mb={2}>
         <Box
-          position="absolute"
-          right={2}
           onClick={() => setIsMenuHidden(!isMenuHidden)}
+          position="absolute"
+          right={4}
         >
-          {isMenuHidden ? <BsArrowRightSquareFill /> : <BsArrowLeftSquare />}
+          {isMenuHidden ? (
+            <Box mb={10}>
+              <BsArrowRightSquareFill
+                gradientTransform="linear(to-t, #97F8B1, #2F80ED)"
+                color={"#2F80ED"}
+              />
+            </Box>
+          ) : (
+            <BsArrowLeftSquare color={"#2F80ED"} />
+          )}
         </Box>
         <Box w="full" textAlign="center">
           {!isMenuHidden && (
@@ -78,7 +87,7 @@ const Menu = (props: MenuProps) => {
             </Text>
           )}
           {menuItems.map((item) => (
-            <Box key={item.id} mb={2}>
+            <Box key={item.id} my={5}>
               <NextLink
                 href={item.link ? item.link : ""}
                 passHref={!!item.link}

@@ -79,7 +79,6 @@ const NewsLetter = () => {
         },
       })
       .then((response) => {
-        console.log(response);
         return {
           count: response.pagination.total,
           items: response.data,

@@ -2,17 +2,21 @@ import { Box, Heading, Text } from "@chakra-ui/react";
 import UITable from "../../../../components/ui/table";
 import { useRouter } from "next/router";
 import {
+  ChangeAction,
   ColumnDef,
   DataResponse,
 } from "../../../../components/ui/table/interfaces";
 import { TRessource } from "../../../api/ressources/types";
 import { fetchApi } from "../../../../utils/api/fetch-api";
 import { TNewsLetter } from "../../../api/newsletters/types";
+import { BsEye, BsPencil, BsTrash } from "react-icons/bs";
+import useModals from "../../../../utils/hooks/useModals";
 
 const NewsLetter = () => {
   const router = useRouter();
+  const { confirm } = useModals();
 
-  const columnDefs: ColumnDef<TNewsLetter> = [
+  const columnDefs: ColumnDef<TNewsLetter>[] = [
     {
       key: "createdAt",
       label: "Date de création",
@@ -33,7 +37,32 @@ const NewsLetter = () => {
       label: "Contenu",
     },
   ];
-  const changeActions = [];
+  const changeActions: ChangeAction<TNewsLetter>[] = [
+    {
+      key: "update",
+      label: "Modifier",
+      icon: <BsPencil />,
+      action: (item: TNewsLetter) => {
+        router.push("/dashboard/bo/newsletters/" + item.id);
+      },
+    },
+    {
+      key: "delete",
+      label: "",
+      icon: <BsTrash />,
+      action: (item: TNewsLetter) => {
+        return confirm("Supprimer la ressource" + item.title + " ?").then(
+          (value) => {
+            if (value) {
+              return fetchApi.delete("/api/newsletters/delete", {
+                id: item.id,
+              });
+            }
+          }
+        );
+      },
+    },
+  ];
 
   const retrieveData = (
     page: number,

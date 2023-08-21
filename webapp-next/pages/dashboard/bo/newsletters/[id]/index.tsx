@@ -1,14 +1,17 @@
 import {
   Box,
+  Button,
   Container,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Heading,
   Input,
+  Modal,
   Stack,
   Text,
   Textarea,
+  useToast,
 } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { useRouter } from "next/router";
@@ -22,12 +25,23 @@ import {
   TNewsLetterCreationPayload,
   TNewsLetterUpdatePayload,
 } from "../../../../api/newsletters/types";
+import { TRessource } from "../../../../api/ressources/types";
+import RessourceModal from "../../../../../components/bo/newsletters/RessourceModal";
 
 const NewsLetterCreate = () => {
   const router = useRouter();
   const { id } = router.query;
   const [newsLetter, setNewsLetter] = React.useState<TNewsLetter>();
   const [isLoading, setIsLoading] = React.useState<boolean>();
+  const [isMainPageLoading, setIsMainPageLoading] = React.useState<boolean>();
+  const [isModalVisible, setIsModalVisible] = React.useState<boolean>();
+  const [ressources, setRessources] = React.useState<TRessource[]>();
+  const [selectedRessources, setSelectedRessources] = React.useState<
+    Array<TRessource>
+  >([]);
+  const [page, setPage] = React.useState<number>(1);
+
+  const toast = useToast();
 
   let initialValues: TNewsLetterCreationPayload | TNewsLetterUpdatePayload = {
     title: "",
@@ -51,15 +65,64 @@ const NewsLetterCreate = () => {
 
   const validate = async (
     tmpNewsLetter: TNewsLetterCreationPayload | TNewsLetterUpdatePayload
-  ) => {};
+  ) => {
+    setIsMainPageLoading(true);
+    try {
+      if (id === "new") {
+        fetchApi.post("/api/newsletters/create", tmpNewsLetter).then((res) => {
+          router.push("/dashboard/bo/newsletters");
+        });
+      } else {
+        fetchApi
+          .put("/api/newsletters/update", {
+            id: newsLetter?.id,
+            ...tmpNewsLetter,
+          })
+          .then((res) => {
+            router.push("/dashboard/bo/newsletters");
+          });
+      }
+    } catch (err) {
+      toast({
+        title: `Erreur lors de la ${
+          "id" in tmpNewsLetter ? "modification" : "création"
+        } de ${tmpNewsLetter.title}`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
 
   const fetchNewsletter = async (id: string) => {
-    setIsLoading(true);
+    setIsMainPageLoading(true);
     try {
       fetchApi
         .get("/api/newsletters/find", { id: parseInt(id as string) })
         .then((res) => {
           setNewsLetter(res);
+          setIsMainPageLoading(false);
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fetchRessources = async () => {
+    setIsLoading(true);
+    try {
+      fetchApi
+        .get("/api/ressources/list", {
+          pagination: {
+            page,
+            pageSize: 10,
+          },
+          sort: {
+            createdAt: "desc",
+          },
+        })
+        .then((res) => {
+          setRessources(res.data);
           setIsLoading(false);
         });
     } catch (err) {
@@ -68,12 +131,33 @@ const NewsLetterCreate = () => {
   };
 
   React.useEffect(() => {
+    if (isModalVisible) {
+      fetchRessources();
+    }
+  }, [isModalVisible, page]);
+
+  React.useEffect(() => {
     if (id && id !== "new") {
       fetchNewsletter(id as string);
     }
   }, [id]);
 
-  if ((id !== "new" && !newsLetter) || isLoading) return <Loader />;
+  const handleSelectedRessources = (ressource: TRessource) => {
+    if (selectedRessources?.find((r) => r.id === ressource.id)) {
+      setSelectedRessources(
+        selectedRessources.filter((r) => r.id !== ressource.id)
+      );
+    } else {
+      setSelectedRessources([...selectedRessources, ressource]);
+    }
+  };
+
+  const handleArrowPress = (value: number) => {
+    if (value === -1 && page > 1) setPage(page - 1);
+    if (value === 1) setPage(page + 1);
+  };
+
+  if ((id !== "new" && !newsLetter) || isMainPageLoading) return <Loader />;
 
   return (
     <>
@@ -150,7 +234,31 @@ const NewsLetterCreate = () => {
                         {formik.errors.description as string}
                       </FormErrorMessage>
                     </FormControl>
+                    <Button onClick={() => setIsModalVisible(true)}>
+                      Ajouter une ressource
+                    </Button>
+                    <RessourceModal
+                      loading={isLoading}
+                      page={page}
+                      isModalVisible={isModalVisible}
+                      setIsModalVisible={setIsModalVisible}
+                      ressources={ressources as TRessource[]}
+                      selectedRessources={selectedRessources as TRessource[]}
+                      handleSelectedRessources={handleSelectedRessources}
+                      handleArrowPress={handleArrowPress}
+                    />
                   </Stack>
+                  <Button
+                    onClick={() => formik.handleSubmit()}
+                    position="absolute"
+                    bottom="10"
+                    left="50%"
+                    transform="translateX(50%)"
+                    alignSelf="center"
+                    mx="auto"
+                  >
+                    Enregistrer
+                  </Button>
                 </Form>
               );
             }}

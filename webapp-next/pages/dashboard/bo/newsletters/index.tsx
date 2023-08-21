@@ -23,7 +23,7 @@ const NewsLetter = () => {
       renderItem: (item: TNewsLetter) => {
         return (
           <Text fontSize="sm">
-            {new Date(item.createdAt as string).toLocaleDateString()}
+            {new Date(item.createdAt as string).toLocaleDateString("fr-FR")}
           </Text>
         );
       },

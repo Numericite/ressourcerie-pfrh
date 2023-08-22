@@ -27,6 +27,7 @@ import {
 } from "../../../../api/newsletters/types";
 import { TRessource } from "../../../../api/ressources/types";
 import RessourceModal from "../../../../../components/bo/newsletters/RessourceModal";
+import RessourcesDisplayer from "../../../../../components/bo/newsletters/RessourcesDisplayer";
 
 const NewsLetterCreate = () => {
   const router = useRouter();
@@ -67,6 +68,9 @@ const NewsLetterCreate = () => {
     tmpNewsLetter: TNewsLetterCreationPayload | TNewsLetterUpdatePayload
   ) => {
     setIsMainPageLoading(true);
+    if (selectedRessources.length > 0) {
+      tmpNewsLetter.ressources = selectedRessources;
+    }
     try {
       if (id === "new") {
         fetchApi.post("/api/newsletters/create", tmpNewsLetter).then((res) => {
@@ -141,6 +145,12 @@ const NewsLetterCreate = () => {
       fetchNewsletter(id as string);
     }
   }, [id]);
+
+  React.useEffect(() => {
+    if (newsLetter) {
+      setSelectedRessources(newsLetter.ressources);
+    }
+  }, [newsLetter]);
 
   const handleSelectedRessources = (ressource: TRessource) => {
     if (selectedRessources?.find((r) => r.id === ressource.id)) {
@@ -234,31 +244,41 @@ const NewsLetterCreate = () => {
                         {formik.errors.description as string}
                       </FormErrorMessage>
                     </FormControl>
-                    <Button onClick={() => setIsModalVisible(true)}>
-                      Ajouter une ressource
+                    <Button
+                      size="sm"
+                      onClick={() => setIsModalVisible(true)}
+                      variant="solid"
+                    >
+                      {selectedRessources?.length > 0
+                        ? "Modifier les ressources"
+                        : "Ajouter une ressource"}
                     </Button>
-                    <RessourceModal
-                      loading={isLoading}
-                      page={page}
-                      isModalVisible={isModalVisible}
-                      setIsModalVisible={setIsModalVisible}
-                      ressources={ressources as TRessource[]}
-                      selectedRessources={selectedRessources as TRessource[]}
-                      handleSelectedRessources={handleSelectedRessources}
-                      handleArrowPress={handleArrowPress}
-                    />
+                    {isModalVisible && (
+                      <RessourceModal
+                        loading={isLoading}
+                        page={page}
+                        isModalVisible={isModalVisible}
+                        setIsModalVisible={setIsModalVisible}
+                        ressources={ressources as TRessource[]}
+                        selectedRessources={selectedRessources as TRessource[]}
+                        handleSelectedRessources={handleSelectedRessources}
+                        handleArrowPress={handleArrowPress}
+                      />
+                    )}
+                    {selectedRessources?.length > 0 && (
+                      <RessourcesDisplayer ressources={selectedRessources} />
+                    )}
                   </Stack>
-                  <Button
-                    onClick={() => formik.handleSubmit()}
-                    position="absolute"
-                    bottom="10"
-                    left="50%"
-                    transform="translateX(50%)"
-                    alignSelf="center"
-                    mx="auto"
-                  >
-                    Enregistrer
-                  </Button>
+                  {selectedRessources.length > 0 && (
+                    <Button
+                      onClick={() => formik.handleSubmit()}
+                      isLoading={formik.isSubmitting}
+                      size="md"
+                      my={2}
+                    >
+                      Enregistrer
+                    </Button>
+                  )}
                 </Form>
               );
             }}

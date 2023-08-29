@@ -60,7 +60,7 @@ const NewsLetterCreate = () => {
 
   const validationSchema = yup.object().shape({
     title: yup.string().required("Le titre est requis"),
-    description: yup.string().required("La description est requise"),
+    description: yup.string().required("Le contenu est requis"),
     ressources: yup.array().required("Les ressources sont requises"),
   });
 
@@ -230,7 +230,7 @@ const NewsLetterCreate = () => {
                       }
                     >
                       <FormLabel htmlFor="description">
-                        Description de la newsletter
+                        Contenu de la newsletter
                       </FormLabel>
                       <Textarea
                         w="full"

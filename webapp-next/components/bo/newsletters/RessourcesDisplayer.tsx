@@ -8,7 +8,14 @@ const RessourcesDisplayer = ({
   ressources: Array<TRessource>;
 }) => {
   return (
-    <Stack spacing={4} flexDir={"column"} w="full">
+    <Stack
+      spacing={4}
+      flexDir={"column"}
+      w="full"
+      maxH={"sm"}
+      overflowY="scroll"
+      mb={5}
+    >
       {ressources.map((ressource, index) => (
         <Card
           key={index}

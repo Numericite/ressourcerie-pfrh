@@ -70,7 +70,7 @@ const RessourceModal = (props: RessourceModalProps) => {
             <Loader />
           ) : (
             <Container maxW="container.lg">
-              <Table size="sm">
+              <Table size="md">
                 <Thead>
                   <Tr>
                     {tablehead.map((head, index) => {
@@ -148,7 +148,7 @@ const RessourceModal = (props: RessourceModalProps) => {
         </ModalBody>
         <ModalFooter>
           {selectedRessources.length > 0 && (
-            <Button size="sm" onClick={() => setIsModalVisible(false)}>
+            <Button size="md" onClick={() => setIsModalVisible(false)}>
               Valider la selection de {selectedRessources.length} ressource(s)
             </Button>
           )}

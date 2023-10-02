@@ -9,7 +9,7 @@ import {
 import { TRessource } from "../../../api/ressources/types";
 import { fetchApi } from "../../../../utils/api/fetch-api";
 import { TNewsLetter } from "../../../api/newsletters/types";
-import { BsEye, BsPencil, BsTrash } from "react-icons/bs";
+import { BsEye, BsPencil, BsSend, BsTrash } from "react-icons/bs";
 import useModals from "../../../../utils/hooks/useModals";
 
 const NewsLetter = () => {
@@ -38,6 +38,18 @@ const NewsLetter = () => {
     },
   ];
   const changeActions: ChangeAction<TNewsLetter>[] = [
+    {
+      key: "send",
+      label: "Envoyer",
+      icon: <BsSend />,
+      action: (item: TNewsLetter) => {
+        return confirm("Envoyer la ressource" + item.title + " ?").then(
+          (value) => {
+            console.log(value);
+          }
+        );
+      },
+    },
     {
       key: "update",
       label: "Modifier",

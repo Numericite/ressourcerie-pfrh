@@ -4,7 +4,8 @@
   "info": {
     "singularName": "newsletter",
     "pluralName": "newsletters",
-    "displayName": "Newsletter"
+    "displayName": "Newsletter",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -21,6 +22,14 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::ressource.ressource"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "draft",
+        "sent"
+      ],
+      "default": "draft"
     }
   }
 }

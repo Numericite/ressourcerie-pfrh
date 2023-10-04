@@ -10,20 +10,18 @@ import {
   DataResponse,
 } from "../../../../components/ui/table/interfaces";
 import { fetchApi } from "../../../../utils/api/fetch-api";
+
 import useModals from "../../../../utils/hooks/useModals";
 import {
   TRessource,
   TRessourceUpdateStatusPayload,
 } from "../../../api/ressources/types";
 import IconPlaceHolder from "../../../../components/ui/icon-placeholder";
-import { TTheme } from "../../../api/themes/types";
 import { formatDateToFrenchString } from "../../../../utils/tools";
-
 
 const DashboardRessources = () => {
   const router = useRouter();
   const { confirm } = useModals();
-  const [themes, setThemes] = React.useState<TTheme[]>([]);
 
   const columnDefs: ColumnDef<TRessource>[] = [
     {
@@ -171,12 +169,7 @@ const DashboardRessources = () => {
 
   const retrieveData = (
     page: number,
-    pageSize: number,
-    search: string,
-    filters: {
-      label: string;
-      value: string | number;
-    }[]
+    pageSize: number
   ): Promise<DataResponse<TRessource>> => {
     return fetchApi
       .get("/api/ressources/list", {
@@ -187,10 +180,6 @@ const DashboardRessources = () => {
         sort: {
           createdAt: "desc",
         },
-        filters: {
-          theme: filters.map((f) => f.value),
-        },
-        _q: search,
       })
       .then((response) => {
         return {
@@ -199,16 +188,6 @@ const DashboardRessources = () => {
         };
       });
   };
-
-  const retrieveThemes = () => {
-    return fetchApi.get("/api/themes/list").then((response) => {
-      setThemes(response.data);
-    });
-  };
-
-  React.useEffect(() => {
-    retrieveThemes();
-  }, []);
 
   return (
     <Box minW="full">
@@ -219,17 +198,6 @@ const DashboardRessources = () => {
         retrieveData={retrieveData}
         columnDefs={columnDefs}
         changeActions={changeActions}
-        displaySearchbar={true}
-        filters={[
-          {
-            title: "Thème",
-            slug: "theme",
-            items: themes.map((theme) => ({
-              label: theme.name,
-              value: theme.id,
-            })),
-          },
-        ]}
         onNewItem={() => {
           router.push("/dashboard/bo/ressources/new");
         }}

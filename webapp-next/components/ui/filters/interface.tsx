@@ -8,5 +8,5 @@ export interface FilterProps {
 
 export interface Filter {
   label: string;
-  value: string | number;
+  value: string;
 }

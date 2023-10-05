@@ -10,19 +10,20 @@ import {
   Text,
   Spinner,
   Select,
-} from "@chakra-ui/react";
-import { AddIcon, ArrowForwardIcon, ChevronDownIcon } from "@chakra-ui/icons";
-import { useState, useEffect, FormEvent } from "react";
+  Flex
+} from '@chakra-ui/react';
+import { AddIcon, ArrowForwardIcon, ChevronDownIcon } from '@chakra-ui/icons';
+import { useState, useEffect, FormEvent } from 'react';
 
-import { TableProps } from "./interfaces";
-import { ReactNode } from "react";
-import { useDebounce } from "usehooks-ts";
-import type { Filter } from "../filters/interface";
-import Searchbar from "../searchbar";
-import Filters from "../filters";
-import DropdownButton from "../dropdown";
-import { isPromise } from "../../../utils/globals/tools";
-import ActionLink from "./action-link";
+import { TableProps } from './interfaces';
+import { ReactNode } from 'react';
+import { useDebounce } from 'usehooks-ts';
+import type { Filter } from '../filters/interface';
+import Searchbar from '../searchbar';
+import Filters from '../filters';
+import DropdownButton from '../dropdown';
+import { isPromise } from '../../../utils/globals/tools';
+import ActionLink from './action-link';
 
 const UITable = <TItem,>(props: TableProps<TItem>) => {
   const { columnDefs, retrieveData, changeActions, onDelete, onUpdate } = props;
@@ -33,18 +34,18 @@ const UITable = <TItem,>(props: TableProps<TItem>) => {
   const [numberPerPage, setNumberPerPage] = useState<number>(25);
   const [count, setCount] = useState<number>(0);
   const [nbPages, setNbPages] = useState<number>(1);
-  const [search, setSearch] = useState<string>("");
+  const [search, setSearch] = useState<string>('');
   const debounceSearch = useDebounce(search, 700);
   const [selectedFilters, setSelectedFilters] = useState<Filter[]>([]);
 
   const getItems = () => {
     setIsLoading(true);
     retrieveData(page, numberPerPage, search, selectedFilters)
-      .then((response) => {
+      .then(response => {
         setCount(response.count);
         setItems(response.items);
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error);
       })
       .finally(() => {
@@ -54,7 +55,12 @@ const UITable = <TItem,>(props: TableProps<TItem>) => {
 
   useEffect(() => {
     if (page && numberPerPage) getItems();
-  }, [page, numberPerPage, debounceSearch, selectedFilters]);
+  }, [page, numberPerPage]);
+
+  useEffect(() => {
+    if (page !== 1) setPage(1);
+    else getItems();
+  }, [debounceSearch, selectedFilters]);
 
   useEffect(() => {
     if (count && numberPerPage)
@@ -88,7 +94,7 @@ const UITable = <TItem,>(props: TableProps<TItem>) => {
       <Box display="flex" mb={6}>
         {props.onNewItem && !props.hideNewItem && (
           <Button
-            alignSelf={"center"}
+            alignSelf={'center'}
             variant="primary"
             size="xs"
             borderRadius="3xl"
@@ -96,38 +102,22 @@ const UITable = <TItem,>(props: TableProps<TItem>) => {
             p={4}
             mr={2}
           >
-            <AddIcon mr={2} fontSize="xs" />{" "}
-            {props.newItemLabel ? props.newItemLabel : "Ajouter"}
+            <AddIcon mr={2} fontSize="xs" />{' '}
+            {props.newItemLabel ? props.newItemLabel : 'Ajouter'}
           </Button>
-        )}
-        {props.displaySearchbar && (
-          <Searchbar
-            size="sm"
-            placeholder="Rechercher"
-            onSearch={(e: FormEvent<HTMLInputElement>) => {
-              setSearch(e.currentTarget.value);
-            }}
-          />
         )}
 
         {!props.lightMode && (
           <Box ml="auto" mr="2">
-            <DropdownButton
-              onChange={handleNumberPerPageChange}
-              value={numberPerPage.toString()}
-              options={[
-                { label: "1 ligne", value: "1" },
-                { label: "5 lignes", value: "5" },
-                { label: "10 lignes", value: "10" },
-                { label: "25 lignes", value: "25" },
-                { label: "50 lignes", value: "50" },
-                { label: "100 lignes", value: "100" },
-              ]}
-              isOutline
-              size="md"
-            >
-              Affichage : {numberPerPage} lignes <ChevronDownIcon ml={1} />
-            </DropdownButton>
+            {props.displaySearchbar && (
+              <Searchbar
+                size="sm"
+                placeholder="Rechercher"
+                onSearch={(e: FormEvent<HTMLInputElement>) => {
+                  setSearch(e.currentTarget.value);
+                }}
+              />
+            )}
           </Box>
         )}
         {getFilters()}
@@ -135,18 +125,18 @@ const UITable = <TItem,>(props: TableProps<TItem>) => {
       <Box
         borderRadius="3xl"
         display="flex"
-        shadow={!props.noBorder ? "md" : "none"}
+        shadow={!props.noBorder ? 'md' : 'none'}
         maxW="full"
         bg="white"
       >
-        <Table maxW={"full"}>
+        <Table maxW={'full'}>
           <Thead>
-            <Tr maxW={"full"}>
+            <Tr maxW={'full'}>
               {columnDefs
-                .filter((_) => !_.hide)
+                .filter(_ => !_.hide)
                 .map((columnDef, i) => (
                   <Th
-                    w={columnDef.size ? columnDef.size : "auto"}
+                    w={columnDef.size ? columnDef.size : 'auto'}
                     fontSize="md"
                     textTransform="none"
                     fontWeight="normal"
@@ -158,14 +148,14 @@ const UITable = <TItem,>(props: TableProps<TItem>) => {
                     {columnDef.label}
                   </Th>
                 ))}
-              {columnDefs.filter((_) => !_.hide).length > 0 && <Th></Th>}
+              {columnDefs.filter(_ => !_.hide).length > 0 && <Th></Th>}
             </Tr>
           </Thead>
           <Tbody position="relative">
             {isLoading && (
               <Tr>
                 <Td
-                  colSpan={columnDefs.filter((_) => !_.hide).length + 1}
+                  colSpan={columnDefs.filter(_ => !_.hide).length + 1}
                   textAlign="center"
                 >
                   <Spinner my={10} mx="auto" color="secondary" size="lg" />
@@ -175,7 +165,7 @@ const UITable = <TItem,>(props: TableProps<TItem>) => {
             {!isLoading && items.length === 0 && (
               <Tr>
                 <Td
-                  colSpan={columnDefs.filter((_) => !_.hide).length + 1}
+                  colSpan={columnDefs.filter(_ => !_.hide).length + 1}
                   textAlign="center"
                 >
                   <Text my={10}>Aucun élément à afficher...</Text>
@@ -186,19 +176,19 @@ const UITable = <TItem,>(props: TableProps<TItem>) => {
               items.map((item, index) => (
                 <Tr
                   key={index}
-                  maxW={"full"}
+                  maxW={'full'}
                   borderBottom={
-                    index === items.length - 1 ? "hidden" : "inherit"
+                    index === items.length - 1 ? 'hidden' : 'inherit'
                   }
                 >
                   {columnDefs
-                    .filter((_) => !_.hide)
+                    .filter(_ => !_.hide)
                     .map((columnDef, i) => {
                       const clickChangeAction = changeActions.find(
-                        (action) => action.key === columnDef.clickActionKey
+                        action => action.key === columnDef.clickActionKey
                       );
                       return (
-                        <Td width={"fit-content"} key={i}>
+                        <Td width={'fit-content'} key={i}>
                           <ActionLink
                             action={clickChangeAction?.action}
                             params={[item]}
@@ -215,7 +205,7 @@ const UITable = <TItem,>(props: TableProps<TItem>) => {
                       );
                     })}
                   {changeActions.length > 0 && (
-                    <Td w={"1"}>
+                    <Td w={'1'}>
                       <Box
                         display="flex"
                         flexDirection="row"
@@ -223,8 +213,8 @@ const UITable = <TItem,>(props: TableProps<TItem>) => {
                         alignItems="center"
                       >
                         {changeActions
-                          .filter((_) => !_.hide || !_.hide(item))
-                          .map((changeAction) => (
+                          .filter(_ => !_.hide || !_.hide(item))
+                          .map(changeAction => (
                             <Button
                               size="xs"
                               variant="neutral"
@@ -238,7 +228,7 @@ const UITable = <TItem,>(props: TableProps<TItem>) => {
                                   });
                               }}
                             >
-                              <Box pr={changeAction.label !== "" ? 2 : 0}>
+                              <Box pr={changeAction.label !== '' ? 2 : 0}>
                                 {changeAction.icon}
                               </Box>
                               <Text>{changeAction.label}</Text>
@@ -252,6 +242,25 @@ const UITable = <TItem,>(props: TableProps<TItem>) => {
           </Tbody>
         </Table>
       </Box>
+      <Flex justifyContent="end" mt={4}>
+        <DropdownButton
+          onChange={handleNumberPerPageChange}
+          value={numberPerPage.toString()}
+          options={[
+            { label: '1 ligne', value: '1' },
+            { label: '5 lignes', value: '5' },
+            { label: '10 lignes', value: '10' },
+            { label: '25 lignes', value: '25' },
+            { label: '50 lignes', value: '50' },
+            { label: '100 lignes', value: '100' }
+          ]}
+          isOutline
+          isRounded
+          size="sm"
+        >
+          Affichage : {numberPerPage} lignes <ChevronDownIcon ml={1} />
+        </DropdownButton>
+      </Flex>
       {nbPages > 1 && (
         <Box display="flex">
           <Box display="flex" mx="auto" mt={8}>
@@ -264,11 +273,11 @@ const UITable = <TItem,>(props: TableProps<TItem>) => {
                 }}
               >
                 <Text
-                  as={page === index + 1 ? "b" : undefined}
-                  bg={page === index + 1 ? "primary" : "infoLight"}
+                  as={page === index + 1 ? 'b' : undefined}
+                  bg={page === index + 1 ? 'primary' : 'infoLight'}
                   py={3}
                   textAlign="center"
-                  color={page === index + 1 ? "white" : "black"}
+                  color={page === index + 1 ? 'white' : 'black'}
                   borderRadius="lg"
                   display="block"
                   w="full"
@@ -286,10 +295,10 @@ const UITable = <TItem,>(props: TableProps<TItem>) => {
                 }}
               >
                 <Text
-                  bg={"neutralDark"}
+                  bg={'neutralDark'}
                   py={3}
                   textAlign="center"
-                  color={"white"}
+                  color={'white'}
                   borderRadius="lg"
                   px={4}
                   cursor="pointer"

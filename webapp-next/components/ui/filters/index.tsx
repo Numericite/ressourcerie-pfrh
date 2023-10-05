@@ -1,4 +1,4 @@
-import { ChevronDownIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon } from '@chakra-ui/icons';
 import {
   Menu,
   MenuButton,
@@ -8,10 +8,11 @@ import {
   MenuGroup,
   Checkbox,
   Button,
-} from "@chakra-ui/react";
-import { TableFilter } from "../table/interfaces";
-import { Filter, FilterProps } from "./interface";
-import { useState, useEffect } from "react";
+  Box
+} from '@chakra-ui/react';
+import { TableFilter } from '../table/interfaces';
+import { Filter, FilterProps } from './interface';
+import { useState, useEffect } from 'react';
 
 const UIFilter = (props: FilterProps) => {
   const { filters, hasApply, setSelectedFilters } = props;
@@ -20,9 +21,9 @@ const UIFilter = (props: FilterProps) => {
   );
 
   const handleFilterChange = (filter: Filter) => {
-    if (currentSelectedFilter.map((_) => _.value).includes(filter.value)) {
+    if (currentSelectedFilter.map(_ => _.value).includes(filter.value)) {
       setCurrentSelectedFilter(
-        currentSelectedFilter.filter((f) => f.value !== filter.value)
+        currentSelectedFilter.filter(f => f.value !== filter.value)
       );
     } else {
       setCurrentSelectedFilter([...currentSelectedFilter, filter]);
@@ -39,21 +40,28 @@ const UIFilter = (props: FilterProps) => {
 
   return (
     <Menu>
-      <MenuButton px={4} bgColor="primary" borderRadius={"2xl"} color="white">
+      <MenuButton px={4} bgColor="primary" borderRadius={'2xl'} color="white">
         <Text
           display="flex"
-          alignItems={"center"}
+          alignItems={'center'}
           fontSize="sm"
-          fontWeight={"bold"}
+          fontWeight={'bold'}
         >
           <ChevronDownIcon mr={2} />
-          Filtres
+          <Box display="flex" alignItems={'center'}>
+            <Text as="span">Filtres </Text>
+            {!!currentSelectedFilter.length && (
+              <Text as="span" fontSize="2xs" ml={1} verticalAlign="bottom">
+                ({currentSelectedFilter.length})
+              </Text>
+            )}
+          </Box>
         </Text>
       </MenuButton>
       <MenuList w="full">
         {filters.map((filter: TableFilter) => (
           <MenuGroup key={filter.slug}>
-            <Text pl={3} fontSize="sm" fontWeight={"bold"}>
+            <Text pl={3} fontSize="sm" fontWeight={'bold'}>
               {filter.title}
             </Text>
             <MenuGroup>
@@ -64,7 +72,7 @@ const UIFilter = (props: FilterProps) => {
                     onChange={() => {
                       handleFilterChange({
                         label: filter.slug,
-                        value: item.value,
+                        value: item.value
                       });
                     }}
                   >
@@ -81,10 +89,10 @@ const UIFilter = (props: FilterProps) => {
             variant="outline"
             size="sm"
             bgColor="primary"
-            color={"white"}
+            color={'white'}
             my={3}
             ml={3}
-            _hover={{ color: "primary", bgColor: "white" }}
+            _hover={{ color: 'primary', bgColor: 'white' }}
             onClick={filterValidation}
           >
             <Text>Appliquer</Text>

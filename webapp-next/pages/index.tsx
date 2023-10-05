@@ -52,16 +52,9 @@ const Home = () => {
       <HomeHeader />
       <UseCasesContainer usecases={useCases} />
       <GridCardDisplayer
-        title="Thématiques"
-        items={themes}
-        bgColor="#FAFCFF"
-        renderCard={(theme: TTheme) => (
-          <ThemeCard key={theme.id} theme={theme} />
-        )}
-      />
-      <GridCardDisplayer
         title="Dernières ressources"
         items={ressources}
+        bgColor="#FAFCFF"
         renderCard={(ressource: TRessource) => (
           <RessourceCard
             key={ressource.id}
@@ -70,7 +63,13 @@ const Home = () => {
           />
         )}
       />
-
+      <GridCardDisplayer
+        title="Thématiques"
+        items={themes}
+        renderCard={(theme: TTheme) => (
+          <ThemeCard key={theme.id} theme={theme} />
+        )}
+      />
       <Infos />
     </Box>
   );

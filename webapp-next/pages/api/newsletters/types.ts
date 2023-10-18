@@ -10,9 +10,10 @@ export const ZNewsLetter = z.object({
   id: z.number(),
   title: z.string(),
   description: z.string(),
+  status: z.string(),
   ressources: z.array(ZRessource),
-  createdAt: z.string(),
-  updatedAt: z.string(),
+  createdAt: z.optional(z.string()),
+  updatedAt: z.optional(z.string()),
   image: z.optional(ZStrapiFile),
 });
 
@@ -56,6 +57,15 @@ export type TNewsLetterCreationPayload = z.infer<
 export const ZNewsLetterUpdatePayload = ZNewsLetter.omit(updateOmits);
 export type TNewsLetterUpdatePayload = z.infer<typeof ZNewsLetterUpdatePayload>;
 
+export const ZNewsLetterUpdateStatusPayload = z.object({
+  id: z.number(),
+  status: z.string(),
+});
+
+export type TNewsLetterUpdateStatusPayload = z.infer<
+  typeof ZNewsLetterUpdateStatusPayload
+>;
+
 // ---------------------------
 // ----- DELETE PAYLOADS -----
 // ---------------------------
@@ -81,7 +91,9 @@ export type NewsLetterGetRoutes =
   | "/api/newsletters/list"
   | "/api/newsletters/find";
 export type NewsLetterPostRoutes = "/api/newsletters/create";
-export type NewsLetterPutRoutes = "/api/newsletters/update";
+export type NewsLetterPutRoutes =
+  | "/api/newsletters/update"
+  | "/api/newsletters/update-status";
 export type NewsLetterDeleteRoutes = "/api/newsletters/delete";
 
 //REQUESTS
@@ -94,6 +106,7 @@ export interface NewsLetterRoutesPostParams {
 }
 export interface NewsLetterRoutesPutParams {
   "/api/newsletters/update": TNewsLetterUpdatePayload;
+  "/api/newsletters/update-status": TNewsLetterUpdateStatusPayload;
 }
 export interface NewsLetterRoutesDeleteParams {
   "/api/newsletters/delete": TNewsLetterDeletionPayload;
@@ -108,6 +121,8 @@ export type NewsLetterRoutesDataResponses<T> = T extends "/api/newsletters/list"
   ? TNewsLetterWithoutRessources
   : T extends "/api/newsletters/update"
   ? TNewsLetterWithoutRessources
+  : T extends "/api/newsletters/update-status"
+  ? TNewsLetterWithoutRessources
   : T extends "/api/newsletters/delete"
-  ? TNewsLetter
+  ? never
   : never;

@@ -33,7 +33,7 @@ interface RessourceModalProps {
   selectedRessources: TRessource[];
   handleSelectedRessources: (ressource: TRessource) => void;
   page: number;
-  handleArrowPress: (page: number) => void;
+  handlePagination: (page: number) => void;
   loading?: boolean;
 }
 
@@ -45,7 +45,7 @@ const RessourceModal = (props: RessourceModalProps) => {
     selectedRessources,
     handleSelectedRessources,
     page,
-    handleArrowPress,
+    handlePagination,
     loading,
   } = props;
 
@@ -127,13 +127,13 @@ const RessourceModal = (props: RessourceModalProps) => {
                           mr={3}
                           size="sm"
                           isDisabled={page === 1}
-                          onClick={() => handleArrowPress(-1)}
+                          onClick={() => handlePagination(-1)}
                         >
                           <ArrowBackIcon />
                         </Button>
                         <Button
                           size="sm"
-                          onClick={() => handleArrowPress(1)}
+                          onClick={() => handlePagination(1)}
                           isDisabled={ressources.length < 10}
                         >
                           <ArrowForwardIcon />

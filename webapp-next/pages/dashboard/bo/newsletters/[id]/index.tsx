@@ -13,7 +13,7 @@ import {
   Textarea,
   useToast,
 } from "@chakra-ui/react";
-import { Form, Formik } from "formik";
+import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import React from "react";
 import BackButton from "../../../../../components/ui/back-button/back-button";
@@ -28,6 +28,10 @@ import {
 import { TRessource } from "../../../../api/ressources/types";
 import RessourceModal from "../../../../../components/bo/newsletters/RessourceModal";
 import RessourcesDisplayer from "../../../../../components/bo/newsletters/RessourcesDisplayer";
+import "react-quill/dist/quill.bubble.css";
+import dynamic from "next/dynamic";
+
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const NewsLetterCreate = () => {
   const router = useRouter();
@@ -48,6 +52,7 @@ const NewsLetterCreate = () => {
     title: "",
     description: "",
     ressources: [],
+    status: "draft",
   };
 
   if (newsLetter && newsLetter.id) {
@@ -55,6 +60,7 @@ const NewsLetterCreate = () => {
       title: newsLetter.title,
       description: newsLetter.description,
       ressources: newsLetter.ressources,
+      status: newsLetter.status,
     };
   }
 
@@ -162,7 +168,7 @@ const NewsLetterCreate = () => {
     }
   };
 
-  const handleArrowPress = (value: number) => {
+  const handlePagination = (value: number) => {
     if (value === -1 && page > 1) setPage(page - 1);
     if (value === 1) setPage(page + 1);
   };
@@ -174,7 +180,7 @@ const NewsLetterCreate = () => {
       <Box mb={4}>
         <BackButton />
       </Box>
-      <Container maxW="container.2lg">
+      <Container maxW="container.lg">
         {id === "new" ? (
           <Heading>Créer une newsletter</Heading>
         ) : (
@@ -230,16 +236,28 @@ const NewsLetterCreate = () => {
                       }
                     >
                       <FormLabel htmlFor="description">
-                        Contenu de la newsletter
+                        Accroche de la newsletter
                       </FormLabel>
-                      <Textarea
-                        w="full"
-                        id="description"
+                      <Field
+                        touched={formik.touched.description}
                         name="description"
                         onBlur={formik.handleBlur}
-                        onChange={formik.handleChange}
-                        value={formik.values.description}
-                      />
+                      >
+                        {({ field }: any) => (
+                          <>
+                            <ReactQuill
+                              style={{
+                                border: "1px solid #CBD5E0",
+                                borderRadius: "4px",
+                              }}
+                              preserveWhitespace={true}
+                              theme="bubble"
+                              onChange={field.onChange(field.name)}
+                              value={formik.values.description}
+                            />
+                          </>
+                        )}
+                      </Field>
                       <FormErrorMessage>
                         {formik.errors.description as string}
                       </FormErrorMessage>
@@ -262,7 +280,7 @@ const NewsLetterCreate = () => {
                         ressources={ressources as TRessource[]}
                         selectedRessources={selectedRessources as TRessource[]}
                         handleSelectedRessources={handleSelectedRessources}
-                        handleArrowPress={handleArrowPress}
+                        handlePagination={handlePagination}
                       />
                     )}
                     {selectedRessources?.length > 0 && (

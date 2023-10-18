@@ -1,4 +1,4 @@
-import { Box, Heading, Text } from "@chakra-ui/react";
+import { Badge, Box, Heading, Tag, Text, useToast } from "@chakra-ui/react";
 import UITable from "../../../../components/ui/table";
 import { useRouter } from "next/router";
 import {
@@ -6,17 +6,25 @@ import {
   ColumnDef,
   DataResponse,
 } from "../../../../components/ui/table/interfaces";
-import { TRessource } from "../../../api/ressources/types";
+
 import { fetchApi } from "../../../../utils/api/fetch-api";
-import { TNewsLetter } from "../../../api/newsletters/types";
-import { BsEye, BsPencil, BsSend, BsTrash } from "react-icons/bs";
+import {
+  TNewsLetter,
+  TNewsLetterUpdateStatusPayload,
+} from "../../../api/newsletters/types";
+import { BsEye, BsPencil, BsTrash, BsJournal } from "react-icons/bs";
 import useModals from "../../../../utils/hooks/useModals";
 
 const NewsLetter = () => {
   const router = useRouter();
   const { confirm } = useModals();
+  const toast = useToast();
 
   const columnDefs: ColumnDef<TNewsLetter>[] = [
+    {
+      key: "title",
+      label: "Nom",
+    },
     {
       key: "createdAt",
       label: "Date de création",
@@ -29,23 +37,65 @@ const NewsLetter = () => {
       },
     },
     {
-      key: "title",
-      label: "Nom",
-    },
-    {
-      key: "description",
-      label: "Contenu",
+      key: "status",
+      label: "Statut",
+      renderItem: (item: TNewsLetter) => {
+        return (
+          <Badge
+            fontSize="sm"
+            colorScheme={item.status === "draft" ? "orange" : "green"}
+          >
+            {item.status === "draft" ? "Brouillon" : "Publié"}
+          </Badge>
+        );
+      },
     },
   ];
   const changeActions: ChangeAction<TNewsLetter>[] = [
     {
-      key: "send",
-      label: "Envoyer",
-      icon: <BsSend />,
+      key: "view",
+      label: "Voir",
+      icon: <BsEye />,
       action: (item: TNewsLetter) => {
-        return confirm("Envoyer la ressource" + item.title + " ?").then(
+        router.push("/dashboard/bo/newsletters/" + item.id);
+      },
+    },
+    {
+      key: "publish",
+      label: "Publier",
+      hide: (item: TNewsLetter) => item.status === "sent",
+      icon: <BsJournal />,
+      action: (item: TNewsLetter) => {
+        return confirm("Publier la newsletter" + item.title + " ?").then(
           (value) => {
-            console.log(value);
+            if (value) {
+              const payload: TNewsLetterUpdateStatusPayload = {
+                id: item.id,
+                status: "sent",
+              };
+
+              fetchApi.put("/api/newsletters/update-status", payload);
+            }
+          }
+        );
+      },
+    },
+    {
+      key: "unpublish",
+      label: "Dépublier",
+      hide: (item: TNewsLetter) => item.status === "draft",
+      icon: <BsJournal />,
+      action: (item: TNewsLetter) => {
+        return confirm("Dépublier la newsletter" + item.title + " ?").then(
+          (value) => {
+            if (value) {
+              const payload: TNewsLetterUpdateStatusPayload = {
+                id: item.id,
+                status: "draft",
+              };
+
+              fetchApi.put("/api/newsletters/update-status", payload);
+            }
           }
         );
       },
@@ -63,15 +113,15 @@ const NewsLetter = () => {
       label: "",
       icon: <BsTrash />,
       action: (item: TNewsLetter) => {
-        return confirm("Supprimer la ressource" + item.title + " ?").then(
-          (value) => {
-            if (value) {
-              return fetchApi.delete("/api/newsletters/delete", {
-                id: item.id,
-              });
-            }
+        return confirm(
+          "Supprimer la newsLetter " + " " + item.title + " ?"
+        ).then((value) => {
+          if (value) {
+            return fetchApi.delete("/api/newsletters/delete", {
+              id: item.id,
+            });
           }
-        );
+        });
       },
     },
   ];

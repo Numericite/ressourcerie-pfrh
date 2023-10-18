@@ -6,6 +6,39 @@
 
 const { createCoreController } = require("@strapi/strapi").factories;
 
+const retrieveDeepPopulate = async (data, ressource_ids) => {
+  const ressources = await strapi
+    .controller("api::ressource.ressource")
+    .customFind({
+      filters: {
+        id: {
+          $in: ressource_ids,
+        },
+      },
+      populate: {
+        theme: true,
+        image: true,
+        sub_themes: true,
+        personaes: true,
+        personae_occupations: true,
+      },
+    });
+
+  let finalNewsletter = {
+    ...{
+      ...data,
+      attributes: {
+        ...data.attributes,
+        ressources: ressources.data.filter((ressource) => {
+          return ressource_ids.includes(ressource.id);
+        }),
+      },
+    },
+  };
+
+  return finalNewsletter;
+};
+
 module.exports = createCoreController("api::newsletter.newsletter", () => ({
   async find(ctx) {
     const { data, meta } = await super.find(ctx);
@@ -58,38 +91,42 @@ module.exports = createCoreController("api::newsletter.newsletter", () => ({
   async findOne(ctx) {
     const { data } = await super.findOne(ctx);
 
-    let ids = data.attributes.ressources.data.map((ressource) => ressource.id);
+    console.log("data", data);
 
-    const ressources = await strapi
-      .controller("api::ressource.ressource")
-      .customFind({
-        filters: {
-          id: {
-            $in: data.attributes.ressources.data.map(
-              (ressource) => ressource.id
-            ),
-          },
-        },
+    let ressource_ids = data.attributes.ressources.data.map(
+      (ressource) => ressource.id
+    );
+
+    let finalNewsletter = await retrieveDeepPopulate(data, ressource_ids);
+
+    return { data: finalNewsletter };
+  },
+  async updateStatus(ctx) {
+    const { id, status } = ctx.request.body;
+    const response = await strapi
+      .service("api::newsletter.newsletter")
+      .update(id, {
+        data: { status: status },
         populate: {
-          theme: true,
-          image: true,
-          sub_themes: true,
-          personaes: true,
-          personae_occupations: true,
+          ressources: true,
         },
       });
 
-    let finalNewsletter = {
-      ...{
-        ...data,
-        attributes: {
-          ...data.attributes,
-          ressources: ressources.data.filter((ressource) => {
-            return ids.includes(ressource.id);
-          }),
-        },
+    let ressource_ids = response.ressources.map((ressource) => ressource.id);
+
+    let { id: response_id, ...responseWithoutId } = response;
+
+    let formatted_response = {
+      id: response_id,
+      attributes: {
+        ...responseWithoutId,
       },
     };
+
+    let finalNewsletter = await retrieveDeepPopulate(
+      formatted_response,
+      ressource_ids
+    );
 
     return { data: finalNewsletter };
   },

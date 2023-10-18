@@ -7,10 +7,12 @@ import {
   TNewsLetterCreationPayload,
   TNewsLetterDeletionPayload,
   TNewsLetterUpdatePayload,
+  TNewsLetterUpdateStatusPayload,
   TNewsLetterWithoutRessources,
   ZNewsLetterCreationPayload,
   ZNewsLetterFindParams,
   ZNewsLetterUpdatePayload,
+  ZNewsLetterUpdateStatusPayload,
   ZNewsLetterWithoutRessources,
 } from "./types";
 import { ZNewsLetter, ZNewsLetterDeletionPayload } from "./types";
@@ -20,7 +22,7 @@ import { getRecursiveStrapiObject } from "../../../utils/api/parse-strapi-object
 const activeSlugs: ActiveSlugs = {
   GET: ["list", "count", "find"],
   POST: ["create"],
-  PUT: ["update"],
+  PUT: ["update", "update-status"],
   DELETE: ["delete"],
 };
 
@@ -131,6 +133,20 @@ const putMethods = async (
           getRecursiveStrapiObject(data.data)
         ),
       };
+    case "update-status": {
+      const payload = JSON.parse(body);
+      const params: TNewsLetterUpdateStatusPayload =
+        ZNewsLetterUpdateStatusPayload.parse(payload);
+      const { status, data } = await axios.put(
+        `/newsletters/updateStatus`,
+        params
+      );
+      console.log("status", status, "data", data);
+      return {
+        status,
+        data: ZNewsLetter.parse(getRecursiveStrapiObject(data.data)),
+      };
+    }
     default:
       return {
         status: 404,
@@ -153,7 +169,10 @@ const deleteMethods = async (
       const params: TNewsLetterDeletionPayload =
         ZNewsLetterDeletionPayload.parse(payload);
       const { status, data } = await axios.delete(`/newsletters/${params.id}`);
-      return { status, data: ZNewsLetter.parse(data) };
+      return {
+        status,
+        data: ZNewsLetter.parse(data.data),
+      };
     default:
       return {
         status: 404,

@@ -124,5 +124,5 @@ export type NewsLetterRoutesDataResponses<T> = T extends "/api/newsletters/list"
   : T extends "/api/newsletters/update-status"
   ? TNewsLetterWithoutRessources
   : T extends "/api/newsletters/delete"
-  ? never
+  ? any
   : never;

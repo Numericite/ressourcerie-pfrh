@@ -30,6 +30,9 @@ import RessourceModal from "../../../../../components/bo/newsletters/RessourceMo
 import RessourcesDisplayer from "../../../../../components/bo/newsletters/RessourcesDisplayer";
 import "react-quill/dist/quill.bubble.css";
 import dynamic from "next/dynamic";
+import DragNDropComponent from "../../../../../components/bo/usecases/dragndrop";
+import RessourceCard from "../../../../../components/ui/ressources/ressource-card";
+import { AiFillCloseCircle } from "react-icons/ai";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
@@ -45,6 +48,7 @@ const NewsLetterCreate = () => {
     Array<TRessource>
   >([]);
   const [page, setPage] = React.useState<number>(1);
+  const [hoveredCardId, setHoveredCardId] = React.useState<number>();
 
   const toast = useToast();
 
@@ -174,6 +178,29 @@ const NewsLetterCreate = () => {
     if (value === 1) setPage(page + 1);
   };
 
+  const displayDeleteButton = (item: TRessource) => {
+    return (
+      <Box
+        position="absolute"
+        top={2}
+        right={2}
+        w={4}
+        h={4}
+        borderRadius={50}
+        zIndex={1}
+        bg="red.500"
+        cursor="pointer"
+        onClick={() =>
+          setSelectedRessources(
+            selectedRessources.filter((res) => res.id !== item.id)
+          )
+        }
+      >
+        <AiFillCloseCircle color="white" />
+      </Box>
+    );
+  };
+
   if ((id !== "new" && !newsLetter) || isMainPageLoading) return <Loader />;
 
   return (
@@ -285,7 +312,33 @@ const NewsLetterCreate = () => {
                       />
                     )}
                     {selectedRessources?.length > 0 && (
-                      <RessourcesDisplayer ressources={selectedRessources} />
+                      <DragNDropComponent
+                        items={selectedRessources || []}
+                        dropppableId="ressources-list"
+                        setItems={setSelectedRessources}
+                        element={(item) => (
+                          <Box
+                            onMouseEnter={() => setHoveredCardId(item.id)}
+                            onMouseLeave={() => setHoveredCardId(undefined)}
+                            w="full"
+                            h="full"
+                            position="relative"
+                          >
+                            <RessourceCard
+                              ressource={item}
+                              position={
+                                1 +
+                                selectedRessources.findIndex(
+                                  (res) => res.id === item.id
+                                )
+                              }
+                              clickable={false}
+                            />
+                            {hoveredCardId === item.id &&
+                              displayDeleteButton(item)}
+                          </Box>
+                        )}
+                      />
                     )}
                   </Stack>
                   {selectedRessources.length > 0 && (

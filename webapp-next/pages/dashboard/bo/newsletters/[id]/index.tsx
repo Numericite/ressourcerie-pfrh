@@ -83,14 +83,15 @@ const NewsLetterCreate = () => {
           router.push("/dashboard/bo/newsletters");
         });
       } else {
-        fetchApi
-          .put("/api/newsletters/update", {
-            id: newsLetter?.id,
-            ...tmpNewsLetter,
-          })
-          .then((res) => {
-            router.push("/dashboard/bo/newsletters");
-          });
+        if (newsLetter)
+          fetchApi
+            .put("/api/newsletters/update", {
+              id: newsLetter.id,
+              ...tmpNewsLetter,
+            })
+            .then((res) => {
+              router.push("/dashboard/bo/newsletters");
+            });
       }
     } catch (err) {
       toast({

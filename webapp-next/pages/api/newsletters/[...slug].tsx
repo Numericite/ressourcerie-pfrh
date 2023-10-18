@@ -141,7 +141,6 @@ const putMethods = async (
         `/newsletters/updateStatus`,
         params
       );
-      console.log("status", status, "data", data);
       return {
         status,
         data: ZNewsLetter.parse(getRecursiveStrapiObject(data.data)),

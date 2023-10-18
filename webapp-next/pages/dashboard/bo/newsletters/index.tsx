@@ -18,7 +18,6 @@ import useModals from "../../../../utils/hooks/useModals";
 const NewsLetter = () => {
   const router = useRouter();
   const { confirm } = useModals();
-  const toast = useToast();
 
   const columnDefs: ColumnDef<TNewsLetter>[] = [
     {
@@ -73,8 +72,7 @@ const NewsLetter = () => {
                 id: item.id,
                 status: "sent",
               };
-
-              fetchApi.put("/api/newsletters/update-status", payload);
+              return fetchApi.put("/api/newsletters/update-status", payload);
             }
           }
         );
@@ -93,8 +91,7 @@ const NewsLetter = () => {
                 id: item.id,
                 status: "draft",
               };
-
-              fetchApi.put("/api/newsletters/update-status", payload);
+              return fetchApi.put("/api/newsletters/update-status", payload);
             }
           }
         );

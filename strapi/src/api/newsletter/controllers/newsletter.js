@@ -91,8 +91,6 @@ module.exports = createCoreController("api::newsletter.newsletter", () => ({
   async findOne(ctx) {
     const { data } = await super.findOne(ctx);
 
-    console.log("data", data);
-
     let ressource_ids = data.attributes.ressources.data.map(
       (ressource) => ressource.id
     );

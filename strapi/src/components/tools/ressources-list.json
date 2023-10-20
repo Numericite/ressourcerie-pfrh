@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_tools_ressources_lists",
+  "info": {
+    "displayName": "ressources_list",
+    "icon": "align-justify",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "position": {
+      "type": "integer"
+    },
+    "ressource": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::ressource.ressource"
+    }
+  }
+}

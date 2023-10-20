@@ -222,10 +222,11 @@ const UITable = <TItem,>(props: TableProps<TItem>) => {
                               key={changeAction.key}
                               onClick={() => {
                                 const response = changeAction.action(item);
-                                if (isPromise(response))
+                                if (isPromise(response)) {
                                   (response as Promise<any>).finally(() => {
                                     getItems();
                                   });
+                                }
                               }}
                             >
                               <Box pr={changeAction.label !== '' ? 2 : 0}>

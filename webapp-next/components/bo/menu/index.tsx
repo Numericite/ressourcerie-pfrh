@@ -1,10 +1,15 @@
-import { Box, Heading, Link, Text } from '@chakra-ui/react';
-import { MenuItem } from '../../../layouts/PrivateLayout';
-import NextLink from 'next/link';
-import { useRouter } from 'next/router';
-import { useState } from 'react';
-import { destroyJwt } from '../../../utils/globals/cookies';
-import { BiLogOut } from 'react-icons/bi';
+import { Box, Heading, Link, Text } from "@chakra-ui/react";
+import { MenuItem } from "../../../layouts/PrivateLayout";
+import NextLink from "next/link";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { destroyJwt } from "../../../utils/globals/cookies";
+import { BiLogOut } from "react-icons/bi";
+import {
+  BsArrowLeftSquare,
+  BsArrowRightSquareFill,
+  BsDoorClosed,
+} from "react-icons/bs";
 
 interface MenuProps {
   menuItems: MenuItem[];
@@ -14,6 +19,7 @@ const Menu = (props: MenuProps) => {
   const { menuItems } = props;
   const router = useRouter();
   const [selectedMenu, setSelectedMenu] = useState(-1);
+  const [isMenuHidden, setIsMenuHidden] = useState<boolean>(false);
 
   const isItemActive = (item: MenuItem) => {
     return item.link && router.pathname.includes(item.link);
@@ -21,7 +27,7 @@ const Menu = (props: MenuProps) => {
 
   const logout = () => {
     destroyJwt();
-    router.push('/dashboard/login');
+    router.push("/dashboard/login");
   };
 
   const handleClick = (id: number) => {
@@ -31,14 +37,14 @@ const Menu = (props: MenuProps) => {
 
   const displayIcon = (item: MenuItem) => {
     return (
-      <Box color={isItemActive(item) ? 'white' : 'primary'}>{item.icon}</Box>
+      <Box color={isItemActive(item) ? "white" : "primary"}>{item.icon}</Box>
     );
   };
 
   return (
     <Box
       p={4}
-      minW={72}
+      minW={isMenuHidden ? 24 : 72}
       position="sticky"
       top={0}
       display="flex"
@@ -48,28 +54,47 @@ const Menu = (props: MenuProps) => {
       borderRightColor="rgba(224, 225, 226, 0.157) 94.44%)"
       flexDirection="column"
       maxW={72}
+      transition="all 0.2s"
     >
       <Box display="flex" mb={2}>
+        <Box
+          onClick={() => setIsMenuHidden(!isMenuHidden)}
+          position="absolute"
+          right={4}
+        >
+          {isMenuHidden ? (
+            <Box mb={10}>
+              <BsArrowRightSquareFill
+                gradientTransform="linear(to-t, #97F8B1, #2F80ED)"
+                color={"#2F80ED"}
+              />
+            </Box>
+          ) : (
+            <BsArrowLeftSquare color={"#2F80ED"} />
+          )}
+        </Box>
         <Box w="full" textAlign="center">
-          <Text fontSize={['xl', '2xl']} fontWeight={'bold'} mt={4} mb={10}>
-            Ressourcerie{' '}
-            <Text
-              as="span"
-              bgGradient="linear(to-t, #97F8B1, #2F80ED)"
-              bgClip="text"
-            >
-              PFRH
-            </Text>{' '}
-          </Text>
-          {menuItems.map(item => (
-            <Box key={item.id} mb={2}>
+          {!isMenuHidden && (
+            <Text fontSize={["xl", "2xl"]} fontWeight={"bold"} mt={4} mb={10}>
+              Ressourcerie{" "}
+              <Text
+                as="span"
+                bgGradient="linear(to-t, #97F8B1, #2F80ED)"
+                bgClip="text"
+              >
+                PFRH
+              </Text>{" "}
+            </Text>
+          )}
+          {menuItems.map((item) => (
+            <Box key={item.id} my={5}>
               <NextLink
-                href={item.link ? item.link : ''}
+                href={item.link ? item.link : ""}
                 passHref={!!item.link}
               >
                 <Link
                   role="group"
-                  w="100%"
+                  w={isMenuHidden ? "fit-content" : "full"}
                   h="100%"
                   display="flex"
                   alignItems="center"
@@ -77,14 +102,14 @@ const Menu = (props: MenuProps) => {
                   px={5}
                   fontWeight="bold"
                   opacity={isItemActive(item) ? 1 : 0.8}
-                  target={item.blank ? '_blank' : '_self'}
+                  target={item.blank ? "_blank" : "_self"}
                   userSelect="none"
                   rounded="md"
                   _hover={{
-                    opacity: 1
+                    opacity: 1,
                   }}
                   backgroundColor={
-                    isItemActive(item) ? '#F6F6F9' : 'transparent'
+                    isItemActive(item) ? "#F6F6F9" : "transparent"
                   }
                   onClick={() => {
                     handleClick(item.id);
@@ -93,13 +118,13 @@ const Menu = (props: MenuProps) => {
                   <Box
                     rounded="lg"
                     p={2}
-                    bg={isItemActive(item) ? 'primary' : 'white'}
+                    bg={isItemActive(item) ? "primary" : "white"}
                     fontSize="xl"
-                    color={isItemActive(item) ? 'white' : 'primary'}
+                    color={isItemActive(item) ? "white" : "primary"}
                   >
                     {displayIcon(item)}
                   </Box>
-                  <Text ml="4">{item.name}</Text>
+                  {!isMenuHidden && <Text ml="4">{item.name}</Text>}
                 </Link>
               </NextLink>
             </Box>
@@ -117,7 +142,7 @@ const Menu = (props: MenuProps) => {
           <Box color="primary" mr={1}>
             <BiLogOut />
           </Box>
-          <Text color="primary">Déconnexion</Text>
+          {!isMenuHidden && <Text color="primary">Déconnexion</Text>}
         </Link>
       </Box>
     </Box>

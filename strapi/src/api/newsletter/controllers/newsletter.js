@@ -6,13 +6,13 @@
 
 const { createCoreController } = require("@strapi/strapi").factories;
 
-const retrieveDeepPopulate = async (data, ressource_ids) => {
-  const ressources = await strapi
+const retrieveDeepPopulate = async (data, ressource_ids, ressource_list) => {
+  const finalNewsletter = await strapi
     .controller("api::ressource.ressource")
     .customFind({
       filters: {
         id: {
-          $in: ressource_ids,
+          $eq: ressource_ids,
         },
       },
       populate: {
@@ -22,19 +22,25 @@ const retrieveDeepPopulate = async (data, ressource_ids) => {
         personaes: true,
         personae_occupations: true,
       },
+    })
+    .then((ressources) => {
+      return {
+        ...{
+          ...data,
+          attributes: {
+            ...data.attributes,
+            ressources_list: ressource_list.map((el) => {
+              return {
+                ...el,
+                ressource: ressources.data.find((ressource) => {
+                  return ressource.id === el.ressource.data.id;
+                }),
+              };
+            }),
+          },
+        },
+      };
     });
-
-  let finalNewsletter = {
-    ...{
-      ...data,
-      attributes: {
-        ...data.attributes,
-        ressources: ressources.data.filter((ressource) => {
-          return ressource_ids.includes(ressource.id);
-        }),
-      },
-    },
-  };
 
   return finalNewsletter;
 };
@@ -43,59 +49,38 @@ module.exports = createCoreController("api::newsletter.newsletter", () => ({
   async find(ctx) {
     const { data, meta } = await super.find(ctx);
 
-    const newsletterPromises = data.map((newsletter) => {
-      let ids = newsletter.attributes.ressources.data.map(
-        (ressource) => ressource.id
-      );
-      return strapi
-        .controller("api::ressource.ressource")
-        .customFind({
-          filters: {
-            id: {
-              $in: newsletter.attributes.ressources.data.map(
-                (ressource) => ressource.id
-              ),
-            },
-          },
-          populate: {
-            theme: true,
-            image: true,
-            sub_themes: true,
-            personaes: true,
-            personae_occupations: true,
-          },
-        })
-        .then((ressources) => {
-          return {
-            ...{
-              ...newsletter,
-              attributes: {
-                ...newsletter.attributes,
-                ressources: ressources.data.filter((ressource) => {
-                  return ids.includes(ressource.id);
-                }),
-              },
-            },
-          };
-        });
+    let ids = [];
+    data.map((el) => {
+      return el.attributes.ressources_list.forEach((res) => {
+        ids.push(res.ressource.data.id);
+      });
     });
 
-    let finalNewsletter = await Promise.all(newsletterPromises).then(
+    const newslettersPromises = data.map((newsletter) => {
+      let ressource_list = newsletter.attributes.ressources_list;
+      return retrieveDeepPopulate(newsletter, ids, ressource_list);
+    });
+
+    let finalNewsletters = await Promise.all(newslettersPromises).then(
       (newsletters) => {
         return newsletters;
       }
     );
 
-    return { data: finalNewsletter, meta };
+    return { data: finalNewsletters, meta };
   },
   async findOne(ctx) {
     const { data } = await super.findOne(ctx);
 
-    let ressource_ids = data.attributes.ressources.data.map(
-      (ressource) => ressource.id
+    let ressource_ids = data.attributes.ressources_list.map(
+      (ressource) => ressource.data.id
     );
 
-    let finalNewsletter = await retrieveDeepPopulate(data, ressource_ids);
+    let finalNewsletter = await retrieveDeepPopulate(
+      data,
+      ressource_ids,
+      data.attributes.ressources_list
+    );
 
     return { data: finalNewsletter };
   },

@@ -109,6 +109,17 @@ import {
   NewsLetterRoutesPostParams,
   NewsLetterRoutesPutParams,
 } from "../../pages/api/newsletters/types";
+import {
+  EventsDeleteRoutes,
+  EventsGetRoutes,
+  EventsPostRoutes,
+  EventsPutRoutes,
+  EventsRoutesDataResponses,
+  EventsRoutesDeleteParams,
+  EventsRoutesGetParams,
+  EventsRoutesPostParams,
+  EventsRoutesPutParams,
+} from "../../pages/api/events/types";
 
 export type DataResponses<T> =
   | AuthRoutesDataResponses<T>
@@ -122,6 +133,7 @@ export type DataResponses<T> =
   | PersonaeOccupationRoutesDataResponses<T>
   | SubThemeRoutesDataResponses<T>
   | NewsLetterRoutesDataResponses<T>
+  | EventsRoutesDataResponses<T>
   | UseCaseRoutesDataResponses<T>;
 
 export type MyGetRoutes =
@@ -136,6 +148,7 @@ export type MyGetRoutes =
   | PersonaeOccupationGetRoutes
   | SubThemeGetRoutes
   | NewsLetterGetRoutes
+  | EventsGetRoutes
   | UseCaseGetRoutes;
 export type MyPostRoutes =
   | AuthPostRoutes
@@ -146,6 +159,7 @@ export type MyPostRoutes =
   | UseCaseStepPostRoutes
   | ThemePostRoutes
   | NewsLetterPostRoutes
+  | EventsPostRoutes
   | UseCasePostRoutes;
 export type MyPutRoutes =
   | UserPutRoutes
@@ -155,6 +169,7 @@ export type MyPutRoutes =
   | ThemePutRoutes
   | UseCasePutRoutes
   | NewsLetterPutRoutes
+  | EventsPutRoutes
   | RessourcePutRoutes;
 export type MyDeleteRoutes =
   | UserDeleteRoutes
@@ -164,6 +179,7 @@ export type MyDeleteRoutes =
   | UseCaseStepDeleteRoutes
   | ContributionDeleteRoutes
   | NewsLetterDeleteRoutes
+  | EventsDeleteRoutes
   | UseCaseDeleteRoutes;
 
 export interface GetRouteParams
@@ -177,6 +193,7 @@ export interface GetRouteParams
     PersonaeOccupationRoutesGetParams,
     SubThemeRoutesGetParams,
     NewsLetterRoutesGetParams,
+    EventsRoutesGetParams,
     ThemeRoutesGetParams {}
 
 export interface PostRouteParams
@@ -188,6 +205,7 @@ export interface PostRouteParams
     ContributionRoutesPostParams,
     UseCaseRoutesPostParams,
     NewsLetterRoutesPostParams,
+    EventsRoutesPostParams,
     ThemeRoutesPostParams {}
 
 export interface PutRouteParams
@@ -198,6 +216,7 @@ export interface PutRouteParams
     UseCaseStepRoutesPutParams,
     UseCaseRoutesPutParams,
     NewsLetterRoutesPutParams,
+    EventsRoutesPutParams,
     ThemeRoutesPutParams {}
 
 export interface DeleteRouteParams
@@ -209,4 +228,5 @@ export interface DeleteRouteParams
     ContributionRoutesDeleteParams,
     RessourceRoutesDeleteParams,
     NewsLetterRoutesDeleteParams,
+    EventsRoutesDeleteParams,
     ThemeRoutesDeleteParams {}

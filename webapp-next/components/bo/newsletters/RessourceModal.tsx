@@ -23,6 +23,7 @@ import {
   ModalFooter,
 } from "@chakra-ui/react";
 import { TRessource } from "../../../pages/api/ressources/types";
+import { TSelectedRessource } from "../../../pages/dashboard/bo/newsletters/[id]";
 import IconPlaceHolder from "../../ui/icon-placeholder";
 import Loader from "../../ui/loader";
 
@@ -30,7 +31,7 @@ interface RessourceModalProps {
   isModalVisible: boolean | undefined;
   setIsModalVisible: (isVisible: boolean) => void;
   ressources: TRessource[];
-  selectedRessources: TRessource[];
+  selectedRessources: TSelectedRessource[];
   handleSelectedRessources: (ressource: TRessource) => void;
   page: number;
   handlePagination: (page: number) => void;
@@ -84,7 +85,7 @@ const RessourceModal = (props: RessourceModalProps) => {
                       key={index}
                       bg={
                         selectedRessources?.find(
-                          (selected) => selected.id === ressource.id
+                          (selected) => selected.ressource.id === ressource.id
                         )
                           ? "#2f6cff33"
                           : ""
@@ -96,7 +97,8 @@ const RessourceModal = (props: RessourceModalProps) => {
                           size="sm"
                           isChecked={
                             selectedRessources?.find(
-                              (selected) => selected.id === ressource.id
+                              (selected) =>
+                                selected.ressource.id === ressource.id
                             )
                               ? true
                               : false

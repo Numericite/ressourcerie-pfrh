@@ -2,15 +2,14 @@ import {
   Box,
   Button,
   Container,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Heading,
   Input,
-  Modal,
   Stack,
   Text,
-  Textarea,
   useToast,
 } from "@chakra-ui/react";
 import { Field, Form, Formik } from "formik";
@@ -27,14 +26,18 @@ import {
 } from "../../../../api/newsletters/types";
 import { TRessource } from "../../../../api/ressources/types";
 import RessourceModal from "../../../../../components/bo/newsletters/RessourceModal";
-import RessourcesDisplayer from "../../../../../components/bo/newsletters/RessourcesDisplayer";
-import "react-quill/dist/quill.bubble.css";
+import "react-quill/dist/quill.snow.css";
 import dynamic from "next/dynamic";
 import DragNDropComponent from "../../../../../components/bo/usecases/dragndrop";
 import RessourceCard from "../../../../../components/ui/ressources/ressource-card";
 import { AiFillCloseCircle } from "react-icons/ai";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+
+export type TSelectedRessource = {
+  position: number;
+  ressource: TRessource;
+};
 
 const NewsLetterCreate = () => {
   const router = useRouter();
@@ -45,7 +48,7 @@ const NewsLetterCreate = () => {
   const [isModalVisible, setIsModalVisible] = React.useState<boolean>();
   const [ressources, setRessources] = React.useState<TRessource[]>();
   const [selectedRessources, setSelectedRessources] = React.useState<
-    Array<TRessource>
+    Array<TSelectedRessource>
   >([]);
   const [page, setPage] = React.useState<number>(1);
   const [hoveredCardId, setHoveredCardId] = React.useState<number>();
@@ -55,35 +58,39 @@ const NewsLetterCreate = () => {
   let initialValues: TNewsLetterCreationPayload | TNewsLetterUpdatePayload = {
     title: "",
     description: "",
-    ressources: [],
+    ressources_list: [],
     status: "draft",
+    external_content: "",
   };
 
   if (newsLetter && newsLetter.id) {
     initialValues = {
       title: newsLetter.title,
       description: newsLetter.description,
-      ressources: newsLetter.ressources,
+      ressources_list: newsLetter.ressources_list,
       status: newsLetter.status,
+      external_content: newsLetter.external_content,
     };
   }
 
   const validationSchema = yup.object().shape({
     title: yup.string().required("Le titre est requis"),
     description: yup.string().required("Le contenu est requis"),
-    ressources: yup.array().required("Les ressources sont requises"),
+    ressources_list: yup.array().required("Les ressources sont requises"),
   });
 
   const validate = async (
     tmpNewsLetter: TNewsLetterCreationPayload | TNewsLetterUpdatePayload
   ) => {
+    console.log("Passe ici", tmpNewsLetter);
     setIsMainPageLoading(true);
     if (selectedRessources.length > 0) {
-      tmpNewsLetter.ressources = selectedRessources;
+      tmpNewsLetter.ressources_list = selectedRessources;
     }
     try {
       if (id === "new") {
         fetchApi.post("/api/newsletters/create", tmpNewsLetter).then((res) => {
+          console.log("res", res);
           router.push("/dashboard/bo/newsletters");
         });
       } else {
@@ -113,7 +120,12 @@ const NewsLetterCreate = () => {
     setIsMainPageLoading(true);
     try {
       fetchApi
-        .get("/api/newsletters/find", { id: parseInt(id as string) })
+        .get("/api/newsletters/find", {
+          id: parseInt(id as string),
+          populate: {
+            ressources_list: { populate: ["ressource"] },
+          },
+        })
         .then((res) => {
           setNewsLetter(res);
           setIsMainPageLoading(false);
@@ -159,23 +171,45 @@ const NewsLetterCreate = () => {
 
   React.useEffect(() => {
     if (newsLetter) {
-      setSelectedRessources(newsLetter.ressources);
+      setSelectedRessources(newsLetter.ressources_list);
     }
   }, [newsLetter]);
 
   const handleSelectedRessources = (ressource: TRessource) => {
-    if (selectedRessources?.find((r) => r.id === ressource.id)) {
+    if (
+      selectedRessources.find(
+        (selectedRessource) => selectedRessource.ressource.id === ressource.id
+      )
+    ) {
       setSelectedRessources(
-        selectedRessources.filter((r) => r.id !== ressource.id)
+        selectedRessources.filter(
+          (selectedRessource) => selectedRessource.ressource.id !== ressource.id
+        )
       );
     } else {
-      setSelectedRessources([...selectedRessources, ressource]);
+      setSelectedRessources([
+        ...selectedRessources,
+        {
+          position: selectedRessources.length + 1,
+          ressource,
+        },
+      ]);
     }
   };
 
   const handlePagination = (value: number) => {
     if (value === -1 && page > 1) setPage(page - 1);
     if (value === 1) setPage(page + 1);
+  };
+
+  const handleCardPosition = (items: TSelectedRessource[]) => {
+    let adjustedItems = items.map((item, index) => {
+      return {
+        ...item,
+        position: index + 1,
+      };
+    });
+    setSelectedRessources(adjustedItems);
   };
 
   const displayDeleteButton = (item: TRessource) => {
@@ -192,7 +226,7 @@ const NewsLetterCreate = () => {
         cursor="pointer"
         onClick={() =>
           setSelectedRessources(
-            selectedRessources.filter((res) => res.id !== item.id)
+            selectedRessources.filter((res) => res.ressource.id !== item.id)
           )
         }
       >
@@ -200,6 +234,22 @@ const NewsLetterCreate = () => {
       </Box>
     );
   };
+
+  const toolbarOptions = [
+    ["bold", "italic", "underline", "strike"], // toggled buttons
+    ["blockquote"],
+    [{ header: 1 }, { header: 2 }], // custom button values
+    [{ list: "ordered" }, { list: "bullet" }],
+
+    [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+    [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+    [{ font: [] }],
+    [{ align: [] }],
+
+    ["link", "image"],
+
+    ["clean"], // remove formatting button
+  ];
 
   if ((id !== "new" && !newsLetter) || isMainPageLoading) return <Loader />;
 
@@ -272,18 +322,14 @@ const NewsLetterCreate = () => {
                         onBlur={formik.handleBlur}
                       >
                         {({ field }: any) => (
-                          <>
+                          <Box my={2}>
                             <ReactQuill
-                              style={{
-                                border: "1px solid #CBD5E0",
-                                borderRadius: "4px",
-                              }}
                               preserveWhitespace={true}
-                              theme="bubble"
+                              theme="snow"
                               onChange={field.onChange(field.name)}
                               value={formik.values.description}
                             />
-                          </>
+                          </Box>
                         )}
                       </Field>
                       <FormErrorMessage>
@@ -306,50 +352,88 @@ const NewsLetterCreate = () => {
                         isModalVisible={isModalVisible}
                         setIsModalVisible={setIsModalVisible}
                         ressources={ressources as TRessource[]}
-                        selectedRessources={selectedRessources as TRessource[]}
+                        selectedRessources={
+                          selectedRessources as TSelectedRessource[]
+                        }
                         handleSelectedRessources={handleSelectedRessources}
                         handlePagination={handlePagination}
                       />
                     )}
-                    {selectedRessources?.length > 0 && (
-                      <DragNDropComponent
-                        items={selectedRessources || []}
-                        dropppableId="ressources-list"
-                        setItems={setSelectedRessources}
-                        element={(item) => (
-                          <Box
-                            onMouseEnter={() => setHoveredCardId(item.id)}
-                            onMouseLeave={() => setHoveredCardId(undefined)}
-                            w="full"
-                            h="full"
-                            position="relative"
-                          >
-                            <RessourceCard
-                              ressource={item}
-                              position={
-                                1 +
-                                selectedRessources.findIndex(
-                                  (res) => res.id === item.id
-                                )
+                    {selectedRessources.length > 0 && (
+                      <>
+                        <Text fontStyle={"italic"} fontSize="sm" my={0} py={0}>
+                          Ordonnez les ressources sélectionnées à votre
+                          convenance :
+                        </Text>
+                        <DragNDropComponent
+                          items={selectedRessources}
+                          dropppableId="ressources-list"
+                          setItems={handleCardPosition}
+                          element={(item) => (
+                            <Box
+                              onMouseEnter={() =>
+                                setHoveredCardId(item.ressource.id)
                               }
-                              clickable={false}
+                              onMouseLeave={() => setHoveredCardId(undefined)}
+                              w="full"
+                              h="full"
+                              position="relative"
+                            >
+                              <RessourceCard
+                                ressource={item.ressource}
+                                position={
+                                  1 +
+                                  selectedRessources.findIndex(
+                                    (res) =>
+                                      res.ressource.id === item.ressource.id
+                                  )
+                                }
+                                clickable={false}
+                              />
+                              {hoveredCardId === item.ressource.id &&
+                                displayDeleteButton(item.ressource)}
+                            </Box>
+                          )}
+                        />
+                      </>
+                    )}
+                    <FormControl isRequired={false}>
+                      <FormLabel htmlFor="external_content">
+                        Actualités externes à partager
+                      </FormLabel>
+                      <Field
+                        touched={formik.touched.external_content}
+                        name="external_content"
+                        onBlur={formik.handleBlur}
+                      >
+                        {({ field }: any) => (
+                          <Box my={2}>
+                            <ReactQuill
+                              preserveWhitespace={true}
+                              theme="snow"
+                              modules={{ toolbar: toolbarOptions }}
+                              onChange={field.onChange(field.name)}
+                              value={formik.values.external_content}
                             />
-                            {hoveredCardId === item.id &&
-                              displayDeleteButton(item)}
                           </Box>
                         )}
-                      />
-                    )}
+                      </Field>
+                      <FormErrorMessage>
+                        {formik.errors.external_content as string}
+                      </FormErrorMessage>
+                    </FormControl>
                   </Stack>
                   {selectedRessources.length > 0 && (
-                    <Button
-                      onClick={() => formik.handleSubmit()}
-                      isLoading={formik.isSubmitting}
-                      size="md"
-                      my={2}
-                    >
-                      Enregistrer
-                    </Button>
+                    <Flex justifyContent={"center"}>
+                      <Button
+                        onClick={() => formik.handleSubmit()}
+                        isLoading={formik.isSubmitting}
+                        size="md"
+                        my={4}
+                      >
+                        Enregistrer
+                      </Button>
+                    </Flex>
                   )}
                 </Form>
               );

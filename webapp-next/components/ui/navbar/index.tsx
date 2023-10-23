@@ -6,34 +6,39 @@ import {
   HStack,
   Link,
   Image,
-  Text
-} from '@chakra-ui/react';
-import { useRouter } from 'next/router';
-import MobileDrawer from '../mobile-drawer';
-import { useMediaQueryAdapter } from '../../../utils/hooks/useMediaQuery';
-import NextLink from 'next/link';
+  Text,
+} from "@chakra-ui/react";
+import { useRouter } from "next/router";
+import MobileDrawer from "../mobile-drawer";
+import { useMediaQueryAdapter } from "../../../utils/hooks/useMediaQuery";
+import NextLink from "next/link";
 
 const Navbar: React.FC = () => {
   const router = useRouter();
 
-  const isLargerThan768 = useMediaQueryAdapter('(min-width: 768px)');
+  const isLargerThan768 = useMediaQueryAdapter("(min-width: 768px)");
 
   if (isLargerThan768 === null) return <></>;
 
   const links = [
-    { label: 'Accueil', href: '/' },
-    { label: 'Ressources', href: '/ressources' },
-    { label: 'Contribution', href: '/contribution' },
-    { label: 'A propos', href: '/about' }
+    { label: "Accueil", href: "/" },
+    { label: "Ressources", href: "/ressources" },
+    { label: "Contribution", href: "/contribution" },
+    {
+      label: "Actualités",
+      href: "/news",
+    },
+
+    { label: "A propos", href: "/about" },
   ];
 
   const displayLinks = links.map((link, index) => {
     return (
       <NextLink key={index} href={link.href}>
         <Link
-          color={router.pathname === link.href ? 'primary' : ''}
-          fontWeight={router.pathname === link.href ? 'bold' : 'inherit'}
-          _hover={{ color: 'primary' }}
+          color={router.pathname === link.href ? "primary" : ""}
+          fontWeight={router.pathname === link.href ? "bold" : "inherit"}
+          _hover={{ color: "primary" }}
         >
           {link.label}
         </Link>
@@ -46,9 +51,9 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <Box width={'100%'} border={'1px solid #E9F1FF'} py={4}>
+    <Box width={"100%"} border={"1px solid #E9F1FF"} py={4}>
       <Container maxW="container.2lg">
-        <Flex justifyContent={'space-between'} alignItems={'center'} w="full">
+        <Flex justifyContent={"space-between"} alignItems={"center"} w="full">
           <HStack>
             <Image src="/Mariane.png" alt="Marianne" w={24} mr={4} />
             <NextLink href="/">
@@ -76,14 +81,14 @@ const Navbar: React.FC = () => {
                       ml={1.5}
                     >
                       PFRH
-                    </Text>{' '}
+                    </Text>{" "}
                     à votre service
                   </Text>
                 </Flex>
               </Flex>
             </NextLink>
           </HStack>
-          <HStack justifyContent={'space-between'} gap={10}>
+          <HStack justifyContent={"space-between"} gap={10}>
             {isLargerThan768 ? displayLinks : displayDrawer()}
           </HStack>
         </Flex>

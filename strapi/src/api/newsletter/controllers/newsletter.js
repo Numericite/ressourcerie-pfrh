@@ -73,7 +73,7 @@ module.exports = createCoreController("api::newsletter.newsletter", () => ({
     const { data } = await super.findOne(ctx);
 
     let ressource_ids = data.attributes.ressources_list.map(
-      (ressource) => ressource.data.id
+      (ressource) => ressource.id
     );
 
     let finalNewsletter = await retrieveDeepPopulate(

@@ -1,7 +1,15 @@
 import { Box } from "@chakra-ui/react";
 import { ReactNode } from "react";
 import { AiTwotoneHome } from "react-icons/ai";
-import { BsBook, BsInboxFill, BsNewspaper, BsPeople } from "react-icons/bs";
+import {
+  BsBook,
+  BsCalendar,
+  BsCalendar2,
+  BsCalendarFill,
+  BsInboxFill,
+  BsNewspaper,
+  BsPeople,
+} from "react-icons/bs";
 import Menu from "../components/bo/menu";
 import Head from "next/head";
 
@@ -45,6 +53,12 @@ const PrivateLayout = ({ children }: { children: ReactNode }) => {
       name: "Newsletters",
       icon: <BsNewspaper />,
       link: "/dashboard/bo/newsletters",
+    },
+    {
+      id: 6,
+      name: "Evénements",
+      icon: <BsCalendarFill />,
+      link: "/dashboard/bo/events",
     },
   ];
 

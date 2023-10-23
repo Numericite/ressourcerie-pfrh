@@ -136,6 +136,9 @@ const NewsLetter = () => {
         sort: {
           createdAt: "desc",
         },
+        populate: {
+          ressources_list: { populate: ["ressource"] },
+        },
       })
       .then((response) => {
         return {

@@ -6,12 +6,18 @@ import { ZRessource } from "../ressources/types";
 // ----- STRAPI DATA TYPES -----
 // -----------------------------
 
+const ZNewsLetterRessourceListItem = z.object({
+  position: z.number(),
+  ressource: ZRessource,
+});
+
 export const ZNewsLetter = z.object({
   id: z.number(),
   title: z.string(),
   description: z.string(),
   status: z.string(),
-  ressources: z.array(ZRessource),
+  ressources_list: z.array(ZNewsLetterRessourceListItem),
+  external_content: z.string(),
   createdAt: z.optional(z.string()),
   updatedAt: z.optional(z.string()),
   image: z.optional(ZStrapiFile),
@@ -23,7 +29,7 @@ export const ZNewsLetterCreated = ZNewsLetter;
 export type TNewsLetterCreated = z.infer<typeof ZNewsLetterCreated>;
 
 export const ZNewsLetterWithoutRessources = ZNewsLetter.omit({
-  ressources: true,
+  ressources_list: true,
 });
 
 export type TNewsLetterWithoutRessources = z.infer<
@@ -81,6 +87,7 @@ export type TNewsLetterDeletionPayload = z.infer<
 // ------------------------------
 export const ZNewsLetterFindParams = z.object({
   id: z.number(),
+  populate: z.object({}).optional(),
 });
 export type TNewsLetterFindParams = z.infer<typeof ZNewsLetterFindParams>;
 

@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Container,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -59,6 +60,7 @@ const NewsLetterCreate = () => {
     description: "",
     ressources_list: [],
     status: "draft",
+    external_content: "",
   };
 
   if (newsLetter && newsLetter.id) {
@@ -67,6 +69,7 @@ const NewsLetterCreate = () => {
       description: newsLetter.description,
       ressources_list: newsLetter.ressources_list,
       status: newsLetter.status,
+      external_content: newsLetter.external_content,
     };
   }
 
@@ -232,6 +235,22 @@ const NewsLetterCreate = () => {
     );
   };
 
+  const toolbarOptions = [
+    ["bold", "italic", "underline", "strike"], // toggled buttons
+    ["blockquote"],
+    [{ header: 1 }, { header: 2 }], // custom button values
+    [{ list: "ordered" }, { list: "bullet" }],
+
+    [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+    [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+    [{ font: [] }],
+    [{ align: [] }],
+
+    ["link", "image"],
+
+    ["clean"], // remove formatting button
+  ];
+
   if ((id !== "new" && !newsLetter) || isMainPageLoading) return <Loader />;
 
   return (
@@ -303,18 +322,14 @@ const NewsLetterCreate = () => {
                         onBlur={formik.handleBlur}
                       >
                         {({ field }: any) => (
-                          <>
+                          <Box my={2}>
                             <ReactQuill
-                              style={{
-                                border: "1px solid #CBD5E0",
-                                borderRadius: "4px",
-                              }}
                               preserveWhitespace={true}
                               theme="snow"
                               onChange={field.onChange(field.name)}
                               value={formik.values.description}
                             />
-                          </>
+                          </Box>
                         )}
                       </Field>
                       <FormErrorMessage>
@@ -345,47 +360,80 @@ const NewsLetterCreate = () => {
                       />
                     )}
                     {selectedRessources.length > 0 && (
-                      <DragNDropComponent
-                        items={selectedRessources}
-                        dropppableId="ressources-list"
-                        setItems={handleCardPosition}
-                        element={(item) => (
-                          <Box
-                            onMouseEnter={() =>
-                              setHoveredCardId(item.ressource.id)
-                            }
-                            onMouseLeave={() => setHoveredCardId(undefined)}
-                            w="full"
-                            h="full"
-                            position="relative"
-                          >
-                            <RessourceCard
-                              ressource={item.ressource}
-                              position={
-                                1 +
-                                selectedRessources.findIndex(
-                                  (res) =>
-                                    res.ressource.id === item.ressource.id
-                                )
+                      <>
+                        <Text fontStyle={"italic"} fontSize="sm" my={0} py={0}>
+                          Ordonnez les ressources sélectionnées à votre
+                          convenance :
+                        </Text>
+                        <DragNDropComponent
+                          items={selectedRessources}
+                          dropppableId="ressources-list"
+                          setItems={handleCardPosition}
+                          element={(item) => (
+                            <Box
+                              onMouseEnter={() =>
+                                setHoveredCardId(item.ressource.id)
                               }
-                              clickable={false}
+                              onMouseLeave={() => setHoveredCardId(undefined)}
+                              w="full"
+                              h="full"
+                              position="relative"
+                            >
+                              <RessourceCard
+                                ressource={item.ressource}
+                                position={
+                                  1 +
+                                  selectedRessources.findIndex(
+                                    (res) =>
+                                      res.ressource.id === item.ressource.id
+                                  )
+                                }
+                                clickable={false}
+                              />
+                              {hoveredCardId === item.ressource.id &&
+                                displayDeleteButton(item.ressource)}
+                            </Box>
+                          )}
+                        />
+                      </>
+                    )}
+                    <FormControl isRequired={false}>
+                      <FormLabel htmlFor="external_content">
+                        Actualités externes à partager
+                      </FormLabel>
+                      <Field
+                        touched={formik.touched.external_content}
+                        name="external_content"
+                        onBlur={formik.handleBlur}
+                      >
+                        {({ field }: any) => (
+                          <Box my={2}>
+                            <ReactQuill
+                              preserveWhitespace={true}
+                              theme="snow"
+                              modules={{ toolbar: toolbarOptions }}
+                              onChange={field.onChange(field.name)}
+                              value={formik.values.external_content}
                             />
-                            {hoveredCardId === item.ressource.id &&
-                              displayDeleteButton(item.ressource)}
                           </Box>
                         )}
-                      />
-                    )}
+                      </Field>
+                      <FormErrorMessage>
+                        {formik.errors.external_content as string}
+                      </FormErrorMessage>
+                    </FormControl>
                   </Stack>
                   {selectedRessources.length > 0 && (
-                    <Button
-                      onClick={() => formik.handleSubmit()}
-                      isLoading={formik.isSubmitting}
-                      size="md"
-                      my={2}
-                    >
-                      Enregistrer
-                    </Button>
+                    <Flex justifyContent={"center"}>
+                      <Button
+                        onClick={() => formik.handleSubmit()}
+                        isLoading={formik.isSubmitting}
+                        size="md"
+                        my={4}
+                      >
+                        Enregistrer
+                      </Button>
+                    </Flex>
                   )}
                 </Form>
               );

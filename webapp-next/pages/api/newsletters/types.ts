@@ -17,6 +17,7 @@ export const ZNewsLetter = z.object({
   description: z.string(),
   status: z.string(),
   ressources_list: z.array(ZNewsLetterRessourceListItem),
+  external_content: z.string(),
   createdAt: z.optional(z.string()),
   updatedAt: z.optional(z.string()),
   image: z.optional(ZStrapiFile),

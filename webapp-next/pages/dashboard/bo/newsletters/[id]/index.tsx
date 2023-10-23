@@ -7,10 +7,8 @@ import {
   FormLabel,
   Heading,
   Input,
-  Modal,
   Stack,
   Text,
-  Textarea,
   useToast,
 } from "@chakra-ui/react";
 import { Field, Form, Formik } from "formik";
@@ -27,14 +25,18 @@ import {
 } from "../../../../api/newsletters/types";
 import { TRessource } from "../../../../api/ressources/types";
 import RessourceModal from "../../../../../components/bo/newsletters/RessourceModal";
-import RessourcesDisplayer from "../../../../../components/bo/newsletters/RessourcesDisplayer";
-import "react-quill/dist/quill.bubble.css";
+import "react-quill/dist/quill.snow.css";
 import dynamic from "next/dynamic";
 import DragNDropComponent from "../../../../../components/bo/usecases/dragndrop";
 import RessourceCard from "../../../../../components/ui/ressources/ressource-card";
 import { AiFillCloseCircle } from "react-icons/ai";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+
+export type TSelectedRessource = {
+  position: number;
+  ressource: TRessource;
+};
 
 const NewsLetterCreate = () => {
   const router = useRouter();
@@ -45,7 +47,7 @@ const NewsLetterCreate = () => {
   const [isModalVisible, setIsModalVisible] = React.useState<boolean>();
   const [ressources, setRessources] = React.useState<TRessource[]>();
   const [selectedRessources, setSelectedRessources] = React.useState<
-    Array<TRessource>
+    Array<TSelectedRessource>
   >([]);
   const [page, setPage] = React.useState<number>(1);
   const [hoveredCardId, setHoveredCardId] = React.useState<number>();
@@ -55,7 +57,7 @@ const NewsLetterCreate = () => {
   let initialValues: TNewsLetterCreationPayload | TNewsLetterUpdatePayload = {
     title: "",
     description: "",
-    ressources: [],
+    ressources_list: [],
     status: "draft",
   };
 
@@ -63,7 +65,7 @@ const NewsLetterCreate = () => {
     initialValues = {
       title: newsLetter.title,
       description: newsLetter.description,
-      ressources: newsLetter.ressources,
+      ressources_list: newsLetter.ressources_list,
       status: newsLetter.status,
     };
   }
@@ -71,19 +73,21 @@ const NewsLetterCreate = () => {
   const validationSchema = yup.object().shape({
     title: yup.string().required("Le titre est requis"),
     description: yup.string().required("Le contenu est requis"),
-    ressources: yup.array().required("Les ressources sont requises"),
+    ressources_list: yup.array().required("Les ressources sont requises"),
   });
 
   const validate = async (
     tmpNewsLetter: TNewsLetterCreationPayload | TNewsLetterUpdatePayload
   ) => {
+    console.log("Passe ici", tmpNewsLetter);
     setIsMainPageLoading(true);
     if (selectedRessources.length > 0) {
-      tmpNewsLetter.ressources = selectedRessources;
+      tmpNewsLetter.ressources_list = selectedRessources;
     }
     try {
       if (id === "new") {
         fetchApi.post("/api/newsletters/create", tmpNewsLetter).then((res) => {
+          console.log("res", res);
           router.push("/dashboard/bo/newsletters");
         });
       } else {
@@ -113,7 +117,12 @@ const NewsLetterCreate = () => {
     setIsMainPageLoading(true);
     try {
       fetchApi
-        .get("/api/newsletters/find", { id: parseInt(id as string) })
+        .get("/api/newsletters/find", {
+          id: parseInt(id as string),
+          populate: {
+            ressources_list: { populate: ["ressource"] },
+          },
+        })
         .then((res) => {
           setNewsLetter(res);
           setIsMainPageLoading(false);
@@ -159,23 +168,45 @@ const NewsLetterCreate = () => {
 
   React.useEffect(() => {
     if (newsLetter) {
-      setSelectedRessources(newsLetter.ressources);
+      setSelectedRessources(newsLetter.ressources_list);
     }
   }, [newsLetter]);
 
   const handleSelectedRessources = (ressource: TRessource) => {
-    if (selectedRessources?.find((r) => r.id === ressource.id)) {
+    if (
+      selectedRessources.find(
+        (selectedRessource) => selectedRessource.ressource.id === ressource.id
+      )
+    ) {
       setSelectedRessources(
-        selectedRessources.filter((r) => r.id !== ressource.id)
+        selectedRessources.filter(
+          (selectedRessource) => selectedRessource.ressource.id !== ressource.id
+        )
       );
     } else {
-      setSelectedRessources([...selectedRessources, ressource]);
+      setSelectedRessources([
+        ...selectedRessources,
+        {
+          position: selectedRessources.length + 1,
+          ressource,
+        },
+      ]);
     }
   };
 
   const handlePagination = (value: number) => {
     if (value === -1 && page > 1) setPage(page - 1);
     if (value === 1) setPage(page + 1);
+  };
+
+  const handleCardPosition = (items: TSelectedRessource[]) => {
+    let adjustedItems = items.map((item, index) => {
+      return {
+        ...item,
+        position: index + 1,
+      };
+    });
+    setSelectedRessources(adjustedItems);
   };
 
   const displayDeleteButton = (item: TRessource) => {
@@ -192,7 +223,7 @@ const NewsLetterCreate = () => {
         cursor="pointer"
         onClick={() =>
           setSelectedRessources(
-            selectedRessources.filter((res) => res.id !== item.id)
+            selectedRessources.filter((res) => res.ressource.id !== item.id)
           )
         }
       >
@@ -279,7 +310,7 @@ const NewsLetterCreate = () => {
                                 borderRadius: "4px",
                               }}
                               preserveWhitespace={true}
-                              theme="bubble"
+                              theme="snow"
                               onChange={field.onChange(field.name)}
                               value={formik.values.description}
                             />
@@ -306,36 +337,41 @@ const NewsLetterCreate = () => {
                         isModalVisible={isModalVisible}
                         setIsModalVisible={setIsModalVisible}
                         ressources={ressources as TRessource[]}
-                        selectedRessources={selectedRessources as TRessource[]}
+                        selectedRessources={
+                          selectedRessources as TSelectedRessource[]
+                        }
                         handleSelectedRessources={handleSelectedRessources}
                         handlePagination={handlePagination}
                       />
                     )}
-                    {selectedRessources?.length > 0 && (
+                    {selectedRessources.length > 0 && (
                       <DragNDropComponent
-                        items={selectedRessources || []}
+                        items={selectedRessources}
                         dropppableId="ressources-list"
-                        setItems={setSelectedRessources}
+                        setItems={handleCardPosition}
                         element={(item) => (
                           <Box
-                            onMouseEnter={() => setHoveredCardId(item.id)}
+                            onMouseEnter={() =>
+                              setHoveredCardId(item.ressource.id)
+                            }
                             onMouseLeave={() => setHoveredCardId(undefined)}
                             w="full"
                             h="full"
                             position="relative"
                           >
                             <RessourceCard
-                              ressource={item}
+                              ressource={item.ressource}
                               position={
                                 1 +
                                 selectedRessources.findIndex(
-                                  (res) => res.id === item.id
+                                  (res) =>
+                                    res.ressource.id === item.ressource.id
                                 )
                               }
                               clickable={false}
                             />
-                            {hoveredCardId === item.id &&
-                              displayDeleteButton(item)}
+                            {hoveredCardId === item.ressource.id &&
+                              displayDeleteButton(item.ressource)}
                           </Box>
                         )}
                       />

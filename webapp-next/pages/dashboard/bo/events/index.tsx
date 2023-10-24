@@ -18,8 +18,11 @@ const EventsManager = (props: EventsManagerProps) => {
     return {
       title: event.title,
       start: new Date(event.start_date),
+      external_link: event.external_link,
     };
   });
+
+  const [currentEvent, setCurrentEvent] = React.useState<any>(null);
 
   const router = useRouter();
 
@@ -41,9 +44,8 @@ const EventsManager = (props: EventsManagerProps) => {
         weekends={false}
         events={events}
         height="auto"
-        selectable={true}
-        select={(info) => {
-          console.log(info);
+        eventClick={(info) => {
+          setCurrentEvent(info.event);
         }}
         handleWindowResize={true}
         nowIndicator={true}
@@ -60,7 +62,9 @@ const EventsManager = (props: EventsManagerProps) => {
         }}
         titleFormat={{ year: "numeric", month: "long" }}
         eventContent={(eventInfo) => {
-          return <EventCard event={eventInfo.event} />;
+          return (
+            <EventCard event={eventInfo.event} currentEvent={currentEvent} />
+          );
         }}
         eventStartEditable={true}
         eventDragStop={(info) => {

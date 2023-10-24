@@ -19,7 +19,6 @@ import IconPlaceHolder from "../../../../components/ui/icon-placeholder";
 import { TTheme } from "../../../api/themes/types";
 import { formatDateToFrenchString } from "../../../../utils/tools";
 
-
 const DashboardRessources = () => {
   const router = useRouter();
   const { confirm } = useModals();

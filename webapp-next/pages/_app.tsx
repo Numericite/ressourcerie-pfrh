@@ -53,6 +53,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <AppContext.Provider value={contextValue}>
       <ChakraProvider theme={theme}>
         <Head>
+          <html lang="fr" />
           <style data-fullcalendar>
             {`
               html {

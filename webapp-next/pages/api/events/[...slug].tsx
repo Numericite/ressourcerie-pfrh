@@ -146,7 +146,11 @@ const deleteMethods = async (
       const params: TEventsDeletionPayload =
         ZEventsDeletionPayload.parse(payload);
       const { status, data } = await axios.delete(`/events/${params.id}`);
-      return { status, data: ZEvents.parse(data) };
+      console.log("data", data);
+      return {
+        status,
+        data: ZEvents.parse(getRecursiveStrapiObject(data.data)),
+      };
     default:
       return {
         status: 404,

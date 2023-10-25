@@ -8,8 +8,8 @@ export const ZEvents = z.object({
   id: z.number().optional(),
   title: z.string(),
   start_date: z.string(),
-  end_date: z.string(),
-  external_link: z.string(),
+  end_date: z.string().optional(),
+  external_link: z.string().optional(),
 });
 export type TEvents = z.infer<typeof ZEvents>;
 

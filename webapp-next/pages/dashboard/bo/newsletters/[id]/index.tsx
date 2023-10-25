@@ -245,9 +245,7 @@ const NewsLetterCreate = () => {
     [{ color: [] }, { background: [] }], // dropdown with defaults from theme
     [{ font: [] }],
     [{ align: [] }],
-
     ["link", "image"],
-
     ["clean"], // remove formatting button
   ];
 

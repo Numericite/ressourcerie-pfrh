@@ -16,6 +16,7 @@ import parse, {
 import React from "react";
 import type { Text as THTML } from "html-react-parser";
 import _ from "lodash";
+import { getYoutubeIdFromFullUrl } from "../../../utils/globals/tools";
 
 interface Props {
   moreInfos: string;
@@ -82,7 +83,29 @@ const MoreActualities = (props: Props) => {
         );
       }
       if (domNode instanceof Element && domNode.name === "p") {
-        return <Text color="neutralDark">{domToReact(domNode.children)}</Text>;
+        if (
+          domNode.children[0] instanceof Element &&
+          domNode.children[0].name === "a"
+        ) {
+          if (domNode.children[0].attribs.href?.includes("youtube.com")) {
+            return (
+              <iframe
+                width="70%"
+                height="450px"
+                src={`https://www.youtube.com/embed/${getYoutubeIdFromFullUrl(
+                  domNode.children[0].attribs.href
+                )}?modestbranding=1&autohide=1&showinfo=0&controls=0`}
+                title="YouTube video player"
+                frameBorder="0"
+                allowFullScreen
+              ></iframe>
+            );
+          }
+        } else {
+          return (
+            <Text color="neutralDark">{domToReact(domNode.children)}</Text>
+          );
+        }
       }
       if (domNode instanceof Element && domNode.name === "img") {
         return (
@@ -124,33 +147,17 @@ const MoreActualities = (props: Props) => {
         );
       }
       if (domNode instanceof Element && domNode.name === "a") {
-        console.log(domNode.attribs.href);
-        if (domNode.attribs.href?.includes("youtube.com")) {
-          console.log("passe ici");
-          const videoId = _.last(domNode.attribs.href.split("/"));
-          return (
-            <iframe
-              width="100%"
-              height="315px"
-              src={`https://www.youtube.com/embed/${videoId}`}
-              title="YouTube video player"
-              frameBorder="0"
-              allowFullScreen
-            ></iframe>
-          );
-        } else {
-          return (
-            <Link
-              as="a"
-              href={domNode.attribs.href}
-              color="primary"
-              target={"_blank"}
-              textDecoration="underline"
-            >
-              {domToReact(domNode.children)}
-            </Link>
-          );
-        }
+        return (
+          <Link
+            as="a"
+            href={domNode.attribs.href}
+            color="primary"
+            target={"_blank"}
+            textDecoration="underline"
+          >
+            {domToReact(domNode.children)}
+          </Link>
+        );
       }
     },
   };

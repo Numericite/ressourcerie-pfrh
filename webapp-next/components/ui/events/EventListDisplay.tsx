@@ -49,7 +49,7 @@ const EventListDisplay = (props: EventListDisplayProps) => {
   let orderedEvents = _.orderBy(events, ["start_date"], ["asc"]);
 
   return (
-    <Flex bg={"#F2FBF9"}>
+    <Flex bg={"#FAFFFD"}>
       <Container
         maxW="container.2lg"
         py={3.5}

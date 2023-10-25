@@ -53,7 +53,8 @@ function MyApp({ Component, pageProps }: AppProps) {
     <AppContext.Provider value={contextValue}>
       <ChakraProvider theme={theme}>
         <Head>
-          <style>
+          <html lang="fr" />
+          <style data-fullcalendar>
             {`
               html {
                 scroll-behavior: smooth;

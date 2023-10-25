@@ -12,7 +12,13 @@ interface EventListCardProps {
 const EventListCard = (props: EventListCardProps) => {
   const { event, cardSize } = props;
   return (
-    <Box cursor="pointer" minH={"full"}>
+    <Box
+      minH={"full"}
+      _hover={{
+        transform: "scale(1.1)",
+        transition: "all 0.3s ease-in-out",
+      }}
+    >
       <Flex
         flexDir={"column"}
         justify={"space-between"}
@@ -25,10 +31,6 @@ const EventListCard = (props: EventListCardProps) => {
         minH={"full"}
         mx={2}
         grow={1}
-        _hover={{
-          transform: "scale(1.1)",
-          transition: "all 0.3s ease-in-out",
-        }}
       >
         <HStack justifyContent={"space-between"} align="flex-start">
           <Text fontSize={"md"} fontWeight="600">

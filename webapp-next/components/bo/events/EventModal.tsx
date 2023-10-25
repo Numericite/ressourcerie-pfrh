@@ -36,6 +36,7 @@ const EventModal = (props: EventModalProps) => {
     title: props.event.title,
     external_link: props.event.external_link,
     start_date: props.event.start_date,
+    end_date: props.event.end_date,
   };
 
   const toast = useToast();
@@ -53,35 +54,74 @@ const EventModal = (props: EventModalProps) => {
   });
 
   const handleSubmit = (values: any) => {
-    const event = {
-      id: props.event.id,
-      title: values.title,
-      external_link: values.external_link,
-      start_date: values.start_date,
-    };
-    fetchApi
-      .put("/api/events/update", event)
-      .then((res) => {
-        toast({
-          title: "L'évenement a été modifié",
-          description: event.title,
-          status: "success",
-          duration: 5000,
-          isClosable: true,
+    if (props.event.id === undefined) {
+      const event = {
+        title: values.title,
+        external_link: values.external_link,
+        start_date: values.start_date,
+        end_date: values?.end_date,
+      };
+      if (event.end_date === "") {
+        event.end_date = event.start_date;
+      }
+      fetchApi
+        .post("/api/events/create", event)
+        .then((res) => {
+          toast({
+            title: "L'évenement a été créé",
+            description: event.title,
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
+          props.onClose();
+          router.reload();
+        })
+        .catch((err) => {
+          toast({
+            title: "Une erreur est survenue",
+            description: err,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
         });
+    } else {
+      const event = {
+        id: props.event.id,
+        title: values.title,
+        external_link: values.external_link,
+        start_date: values.start_date,
+        end_date: values.end_date,
+      };
+      if (event.end_date === "") {
+        event.end_date = event.start_date;
+      }
 
-        props.onClose();
-        router.reload();
-      })
-      .catch((err) => {
-        toast({
-          title: "Une erreur est survenue",
-          description: err,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
+      fetchApi
+        .put("/api/events/update", event)
+        .then((res) => {
+          toast({
+            title: "L'évenement a été modifié",
+            description: event.title,
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
+
+          props.onClose();
+          router.reload();
+        })
+        .catch((err) => {
+          toast({
+            title: "Une erreur est survenue",
+            description: err,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
         });
-      });
+    }
   };
 
   return (
@@ -153,20 +193,58 @@ const EventModal = (props: EventModalProps) => {
                         name="start_date"
                         onBlur={formik.handleBlur}
                         onChange={(e) => {
-                          formik.setFieldValue(
-                            "start_date",
-                            new Date(e.target.value)
-                          );
+                          if (e.target.value) {
+                            formik.setFieldValue(
+                              "start_date",
+                              new Date(e.target.value)
+                            );
+                          } else {
+                            formik.setFieldValue("start_date", "");
+                          }
                         }}
+                        contentEditable={false}
                         value={
-                          formik.values.start_date &&
-                          new Date(formik.values.start_date)
-                            ?.toISOString()
-                            .split("T")[0]
+                          formik.values.start_date !== ""
+                            ? new Date(formik.values.start_date)
+                                ?.toISOString()
+                                .split("T")[0]
+                            : ""
                         }
                       />
                       <FormErrorMessage>
                         {formik.errors.start_date as string}
+                      </FormErrorMessage>
+                    </FormControl>
+                    <FormControl>
+                      <FormLabel htmlFor="end_date">
+                        Date de fin (optionnelle)
+                      </FormLabel>
+                      <Input
+                        w="full"
+                        type="date"
+                        lang="fr"
+                        name="end_date"
+                        onBlur={formik.handleBlur}
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            formik.setFieldValue(
+                              "end_date",
+                              new Date(e.target.value)
+                            );
+                          } else {
+                            formik.setFieldValue("end_date", "");
+                          }
+                        }}
+                        value={
+                          (formik.values.end_date &&
+                            new Date(formik.values.end_date)
+                              ?.toISOString()
+                              .split("T")[0]) ||
+                          ""
+                        }
+                      />
+                      <FormErrorMessage>
+                        {formik.errors.end_date as string}
                       </FormErrorMessage>
                     </FormControl>
                   </VStack>
@@ -177,23 +255,31 @@ const EventModal = (props: EventModalProps) => {
                     display={"flex"}
                     justifyContent={"space-between"}
                   >
-                    <Button
-                      size="sm"
-                      bg="red"
-                      _hover={{
-                        bg: "red.500",
-                      }}
-                      onClick={props.onDelete}
-                    >
-                      <FaTrash />
-                      <Text ml={2}>Supprimer</Text>
-                    </Button>
-
-                    <Flex>
-                      <Button size="sm" type="submit" colorScheme="blue">
-                        Enregistrer
+                    {props.event.id !== undefined && (
+                      <Button
+                        size="sm"
+                        bg="red.600"
+                        cursor="pointer"
+                        _hover={{
+                          bg: "red.400",
+                        }}
+                        _active={{
+                          bg: "red.300",
+                        }}
+                        onClick={props.onDelete}
+                      >
+                        <FaTrash />
                       </Button>
-                    </Flex>
+                    )}
+
+                    <Button
+                      cursor="pointer"
+                      size="sm"
+                      type="submit"
+                      colorScheme="blue"
+                    >
+                      Enregistrer
+                    </Button>
                   </HStack>
                 </ModalFooter>
               </ModalContent>

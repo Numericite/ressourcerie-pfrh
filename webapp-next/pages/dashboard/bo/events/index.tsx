@@ -20,6 +20,7 @@ const EventsManager = (props: EventsManagerProps) => {
       title: event.title,
       start: new Date(event.start_date),
       external_link: event.external_link,
+      end: new Date(event.end_date || event.start_date),
     };
   });
   const [displayEventModal, setDisplayEventModal] =
@@ -41,7 +42,7 @@ const EventsManager = (props: EventsManagerProps) => {
     tmpEventsList.map((event) => {
       if (
         event.title === title &&
-        event.start_date === oldDate?.toISOString()
+        event.start_date.split("T")[0] === oldDate?.toISOString().split("T")[0]
       ) {
         if (newDate) event.start_date = newDate.toISOString();
         if (newEndDate) event.end_date = newEndDate.toISOString();
@@ -78,7 +79,6 @@ const EventsManager = (props: EventsManagerProps) => {
         id: currentEvent.id as number,
       })
       .then((res) => {
-        console.log(res);
         toast({
           title: "L'évenement a été supprimé",
           description: currentEvent.title,
@@ -101,13 +101,18 @@ const EventsManager = (props: EventsManagerProps) => {
       });
   };
 
+  const handleModaleClose = () => {
+    setCurrentEvent(null);
+    setDisplayEventModal(false);
+  };
+
   return (
     <Box minW="full">
       {displayEventModal && (
         <EventModal
           event={currentEvent}
           open={displayEventModal}
-          onClose={() => setDisplayEventModal(false)}
+          onClose={() => handleModaleClose()}
           onDelete={handleDeleteEvent}
         />
       )}
@@ -118,7 +123,15 @@ const EventsManager = (props: EventsManagerProps) => {
       <Button
         size="sm"
         mb={5}
-        onClick={() => router.push("/dashboard/bo/events/new")}
+        onClick={() => {
+          setCurrentEvent({
+            id: undefined,
+            title: "",
+            external_link: "",
+            start_date: new Date(),
+          });
+          setDisplayEventModal(true);
+        }}
       >
         Ajouter un évenement
       </Button>
@@ -133,9 +146,11 @@ const EventsManager = (props: EventsManagerProps) => {
             let event = eventsList.find((event) => {
               if (
                 event.title === info.event.title &&
-                event.start_date === info.event.start?.toISOString()
-              )
+                event.start_date.split("T")[0] ===
+                  info.event.start?.toISOString().split("T")[0]
+              ) {
                 return event;
+              }
             });
             setCurrentEvent(event);
             setDisplayEventModal(true);

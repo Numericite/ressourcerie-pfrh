@@ -13,9 +13,12 @@ const Articles: React.FC<ArticlesPageProps> = (props) => {
   const { events, newsletters } = props;
 
   return (
-    <Container maxW="container.2lg" my="2.125rem">
-      <Text>Articles</Text>
-    </Container>
+    <>
+      <EventListDisplay events={events} />
+      <Container maxW="container.2lg" my="2.125rem">
+        <Text>Articles</Text>
+      </Container>
+    </>
   );
 };
 

@@ -12,7 +12,7 @@ import {
   TNewsLetter,
   TNewsLetterUpdateStatusPayload,
 } from "../../../api/newsletters/types";
-import { BsEye, BsPencil, BsTrash, BsJournal } from "react-icons/bs";
+import { BsPencil, BsTrash, BsJournal } from "react-icons/bs";
 import useModals from "../../../../utils/hooks/useModals";
 
 const NewsLetter = () => {
@@ -51,14 +51,6 @@ const NewsLetter = () => {
     },
   ];
   const changeActions: ChangeAction<TNewsLetter>[] = [
-    {
-      key: "view",
-      label: "Voir",
-      icon: <BsEye />,
-      action: (item: TNewsLetter) => {
-        router.push("/dashboard/bo/newsletters/" + item.id);
-      },
-    },
     {
       key: "publish",
       label: "Publier",

@@ -20,6 +20,7 @@ const RessourceNewsletterDisplay = (props: Props) => {
               key={ressource.id}
               ressource={ressource}
               clickable={true}
+              target={"_blank"}
             />
           ))}
         </SimpleGrid>

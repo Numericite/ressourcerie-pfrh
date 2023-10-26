@@ -1,6 +1,7 @@
 import {
   Box,
   Container,
+  Flex,
   Heading,
   Image,
   Link,
@@ -18,6 +19,7 @@ import React from "react";
 import type { Text as THTML } from "html-react-parser";
 import _ from "lodash";
 import { getYoutubeIdFromFullUrl } from "../../../utils/globals/tools";
+import { cssStringToObject } from "../../../utils/tools";
 
 interface Props {
   moreInfos: string;
@@ -71,6 +73,26 @@ const MoreActualities = (props: Props) => {
               </Box>
             );
           }
+        } else if (
+          domNode.children[0] instanceof Element &&
+          domNode.children[0].name === "img"
+        ) {
+          return (
+            <Box
+              style={
+                domNode.children[0].attribs.style
+                  ? cssStringToObject(domNode.children[0].attribs.style)
+                  : {}
+              }
+              width={`${domNode.children[0].attribs.width}px`}
+            >
+              <Image
+                borderRadius="xl"
+                src={domNode.children[0].attribs.src}
+                alt={domNode.children[0].attribs.alt}
+              />
+            </Box>
+          );
         } else {
           return (
             <Text color="neutralDark">{domToReact(domNode.children)}</Text>

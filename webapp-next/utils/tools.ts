@@ -22,3 +22,16 @@ export function displayMonthYear(date: string) {
   const year = tmpDate.getFullYear();
   return `${capitalizedMonth} ${year}`;
 }
+
+export function cssStringToObject(cssString: string) {
+  const cssArray = cssString.split(";").filter(Boolean);
+  const cssObject: any = {};
+
+  cssArray.forEach((entry) => {
+    const [property, value] = entry.split(":").map((str) => str.trim());
+    const jsProperty = property.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+    cssObject[jsProperty] = value;
+  });
+
+  return cssObject;
+}

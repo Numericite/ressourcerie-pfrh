@@ -88,7 +88,7 @@ const NewsLetterCreate = () => {
     return `${process.env.NEXT_PUBLIC_STRAPI_URL}${res.data[0].url}`;
   };
 
-  //Initiate bottom Editor for external content due to NextJS SSR Constraints with Quill
+  //Initiate bottom Editor for external content due to NextJS SSR Constraints with Quill. So we use this useEffect in order to load Quill only when document is defined on client side.
   const [editorLoaded, setEditorLoaded] = React.useState<boolean>(false);
   const ReactQuill = React.useMemo(
     () => dynamic(() => import("react-quill"), { ssr: false }),
@@ -100,14 +100,20 @@ const NewsLetterCreate = () => {
     (async () => {
       const quill = await import("react-quill");
       const ImageUploader = await import("quill-image-uploader");
+      const ImageResize = await import("quill-image-resize-module-react");
       quill.default.Quill.register(
         "modules/imageUploader",
         ImageUploader.default
       );
+      quill.default.Quill.register("modules/imageResize", ImageResize.default);
       modules.current = {
         toolbar: toolbarOptions,
         imageUploader: {
           upload: (file: File) => handleImageUpload(file),
+        },
+        imageResize: {
+          modules: ["Resize", "DisplaySize", "Toolbar"],
+          parchment: quill.default.Quill.import("parchment"),
         },
       };
       setEditorLoaded(true);

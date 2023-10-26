@@ -353,43 +353,28 @@ const NewsLetterCreate = () => {
                         {formik.errors.title as string}
                       </FormErrorMessage>
                     </FormControl>
-                    <FormControl
-                      isRequired={true}
-                      isInvalid={
-                        !!formik.errors.description &&
-                        (formik.touched.description as boolean)
-                      }
-                    >
+                    <FormControl isRequired={false}>
                       <FormLabel htmlFor="description">
-                        Accroche de la newsletter
+                        Sous titre de la newsletter
                       </FormLabel>
-                      <Field
-                        touched={formik.touched.description}
+                      <Input
+                        w="full"
+                        id="description"
                         name="description"
+                        type="text"
                         onBlur={formik.handleBlur}
-                      >
-                        {({ field }: any) => (
-                          <Box my={2}>
-                            {editorLoaded && (
-                              <ReactQuill
-                                preserveWhitespace={true}
-                                theme="snow"
-                                onChange={field.onChange(field.name)}
-                                value={formik.values.description}
-                              />
-                            )}
-                          </Box>
-                        )}
-                      </Field>
+                        onChange={formik.handleChange}
+                        value={formik.values.description}
+                      />
                       <FormErrorMessage>
                         {formik.errors.description as string}
                       </FormErrorMessage>
                     </FormControl>
-                    <Button
-                      size="sm"
-                      onClick={() => setIsModalVisible(true)}
-                      variant="solid"
-                    >
+                    <Text>
+                      Sélectionnez les ressources à afficher dans la newsletter
+                      :{" "}
+                    </Text>
+                    <Button size="sm" onClick={() => setIsModalVisible(true)}>
                       {selectedRessources?.length > 0
                         ? "Modifier les ressources"
                         : "Ajouter une ressource"}

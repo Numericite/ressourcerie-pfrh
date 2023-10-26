@@ -87,7 +87,7 @@ const EventsManager = (props: EventsManagerProps) => {
           isClosable: true,
         });
         setDisplayEventModal(false);
-        router.reload();
+
         return res;
       })
       .catch((err) => {

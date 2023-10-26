@@ -122,7 +122,7 @@ const EventsManager = () => {
           isClosable: true,
         });
         setDisplayEventModal(false);
-        router.reload();
+        retrieveEvents();
         return res;
       })
       .catch((err) => {
@@ -149,6 +149,7 @@ const EventsManager = () => {
           open={displayEventModal}
           onClose={() => handleModaleClose()}
           onDelete={handleDeleteEvent}
+          retrieveEvents={retrieveEvents}
         />
       )}
 

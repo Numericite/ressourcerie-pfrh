@@ -36,7 +36,7 @@ const EventListDisplay = (props: EventListDisplayProps) => {
 
   const animation = prefersReducedMotion
     ? undefined
-    : `${scroll} 15s linear infinite alternate`;
+    : `${scroll} 15s linear infinite`;
 
   React.useMemo(() => {
     if (!shouldAutoScroll) {

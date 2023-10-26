@@ -6,30 +6,64 @@ import { TEvents } from "../../../api/events/types";
 import FullCalendar from "@fullcalendar/react";
 import interactionPlugin from "@fullcalendar/interaction";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import { GetServerSideProps } from "next";
 import EventCard from "../../../../components/bo/events/EventCard";
 import EventModal from "../../../../components/bo/events/EventModal";
 
-interface EventsManagerProps {
-  events: TEvents[];
-}
-
-const EventsManager = (props: EventsManagerProps) => {
-  const events = props.events.map((event) => {
-    return {
-      title: event.title,
-      start: new Date(event.start_date),
-      external_link: event.external_link,
-      end: new Date(event.end_date || event.start_date),
-    };
-  });
+const EventsManager = () => {
   const [displayEventModal, setDisplayEventModal] =
     React.useState<boolean>(false);
 
-  const [eventsList, setEventsList] = React.useState<TEvents[]>(props.events);
+  const [eventsList, setEventsList] = React.useState<TEvents[]>();
   const toast = useToast();
+  const [
+    eventsFormattedForCalendarModule,
+    setEventsFormattedForCalendarModule,
+  ] = React.useState<any[]>([]);
 
   const [currentEvent, setCurrentEvent] = React.useState<any>(null);
+
+  const calendarRef = React.useRef<any>(null);
+
+  const retrieveEvents = async () => {
+    const events = await fetchApi
+      .get("/api/events/list", {
+        pagination: {
+          page: 1,
+          pageSize: 20,
+        },
+        filters: {
+          start_date: {
+            $gte: new Date().toISOString().split("T")[0],
+          },
+        },
+      })
+      .then((res) => {
+        return res.data;
+      });
+    setEventsList(events);
+  };
+
+  React.useEffect(() => {
+    retrieveEvents();
+  }, []);
+
+  const formatEvents = () => {
+    if (!eventsList) return;
+    setEventsFormattedForCalendarModule(
+      eventsList.map((event) => {
+        return {
+          title: event.title,
+          start: new Date(event.start_date),
+          external_link: event.external_link,
+          end: new Date(event.end_date || event.start_date),
+        };
+      })
+    );
+  };
+
+  React.useEffect(() => {
+    formatEvents();
+  }, [eventsList]);
 
   const onDragEnd = (
     title: string,
@@ -37,6 +71,7 @@ const EventsManager = (props: EventsManagerProps) => {
     newDate: Date | null,
     newEndDate: Date | null
   ) => {
+    if (!eventsList) return;
     let tmpEventsList = [...eventsList];
 
     tmpEventsList.map((event) => {
@@ -87,7 +122,7 @@ const EventsManager = (props: EventsManagerProps) => {
           isClosable: true,
         });
         setDisplayEventModal(false);
-
+        router.reload();
         return res;
       })
       .catch((err) => {
@@ -136,12 +171,14 @@ const EventsManager = (props: EventsManagerProps) => {
         Ajouter un évenement
       </Button>
       <FullCalendar
+        ref={calendarRef}
         plugins={[dayGridPlugin, interactionPlugin]}
         locale="fr"
         weekends={false}
-        events={events}
+        events={eventsFormattedForCalendarModule}
         height="auto"
         eventClick={(info) => {
+          if (!eventsList) return;
           if (info.event.start !== null && info.event.title) {
             let event = eventsList.find((event) => {
               if (
@@ -184,18 +221,6 @@ const EventsManager = (props: EventsManagerProps) => {
       />
     </Box>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  const events = await fetchApi.get("/api/events/list").then((res) => {
-    return res.data;
-  });
-
-  return {
-    props: {
-      events: (events as TEvents[]) || [],
-    },
-  };
 };
 
 export default EventsManager;

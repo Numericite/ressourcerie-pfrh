@@ -31,7 +31,12 @@ const NewsLetterDisplay = (props: NewsLetterDisplayProps) => {
               height={70}
               alt="newsletter_pfrh_icon"
             />
-            <Heading as="h2" fontSize="2xl" mb="1.5rem" textAlign={"center"}>
+            <Heading
+              as="h2"
+              fontSize={["xl", "2xl"]}
+              mb="1.5rem"
+              textAlign={"center"}
+            >
               {newsletter.title} -{" "}
               {displayMonthYear(newsletter.createdAt as string)}
             </Heading>

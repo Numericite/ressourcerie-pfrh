@@ -18,7 +18,6 @@ const Articles: React.FC<ArticlesPageProps> = (props) => {
   return (
     <>
       <EventListDisplay events={events} />
-
       {newsLetterToDisplay && (
         <NewsLetterDisplay newsletter={newsLetterToDisplay} />
       )}

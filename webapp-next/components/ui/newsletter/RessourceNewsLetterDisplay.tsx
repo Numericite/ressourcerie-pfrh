@@ -14,7 +14,7 @@ const RessourceNewsletterDisplay = (props: Props) => {
         <Heading as="h2" fontSize="2xl" mb="1.5rem">
           Dernières ressources
         </Heading>
-        <SimpleGrid columns={ressources.length} spacing={10}>
+        <SimpleGrid columns={[1, ressources.length]} spacing={10}>
           {ressources.map((ressource) => (
             <RessourceCard
               key={ressource.id}

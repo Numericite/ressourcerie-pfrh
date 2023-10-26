@@ -1,4 +1,5 @@
 import {
+  Box,
   Container,
   Heading,
   Image,
@@ -24,39 +25,6 @@ interface Props {
 
 const MoreActualities = (props: Props) => {
   const { moreInfos } = props;
-
-  const [titles, setTitles] = React.useState<
-    {
-      title: string | null;
-      subtitles: (string | null)[] | null;
-    }[]
-  >([]);
-
-  React.useEffect(() => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(moreInfos, "text/html");
-
-    const h1Elements = Array.from(doc.querySelectorAll("h1"));
-    for (let i = 0; i < h1Elements.length; i++) {
-      const title = h1Elements[i].textContent;
-      const subtitles: (string | null)[] = [];
-      let nextElement = h1Elements[i].nextSibling;
-      while (nextElement && nextElement.nodeName !== "H1") {
-        if (nextElement.nodeName === "H2") {
-          subtitles.push(nextElement.textContent);
-        }
-        nextElement = nextElement.nextSibling;
-      }
-      setTitles((prev) => [
-        ...prev,
-        {
-          title,
-          subtitles,
-        },
-      ]);
-    }
-    return () => setTitles([]);
-  }, []);
 
   const options: HTMLReactParserOptions = {
     replace: (domNode) => {
@@ -89,16 +57,18 @@ const MoreActualities = (props: Props) => {
         ) {
           if (domNode.children[0].attribs.href?.includes("youtube.com")) {
             return (
-              <iframe
-                width="70%"
-                height="450px"
-                src={`https://www.youtube.com/embed/${getYoutubeIdFromFullUrl(
-                  domNode.children[0].attribs.href
-                )}?modestbranding=1&autohide=1&showinfo=0&controls=0`}
-                title="YouTube video player"
-                frameBorder="0"
-                allowFullScreen
-              ></iframe>
+              <Box w={["100%", "70%"]} h={["250", "350"]}>
+                <iframe
+                  width={"100%"}
+                  height={"100%"}
+                  src={`https://www.youtube.com/embed/${getYoutubeIdFromFullUrl(
+                    domNode.children[0].attribs.href
+                  )}?modestbranding=1&autohide=1&showinfo=0&controls=0`}
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allowFullScreen
+                ></iframe>
+              </Box>
             );
           }
         } else {

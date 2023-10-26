@@ -36,7 +36,7 @@ const EventListDisplay = (props: EventListDisplayProps) => {
 
   const animation = prefersReducedMotion
     ? undefined
-    : `${scroll} 15s linear infinite alternate`;
+    : `${scroll} 15s linear infinite`;
 
   React.useMemo(() => {
     if (!shouldAutoScroll) {
@@ -49,7 +49,7 @@ const EventListDisplay = (props: EventListDisplayProps) => {
   let orderedEvents = _.orderBy(events, ["start_date"], ["asc"]);
 
   return (
-    <Flex bg={"#F2FBF9"}>
+    <Flex bg={"#FAFFFD"}>
       <Container
         maxW="container.2lg"
         py={3.5}

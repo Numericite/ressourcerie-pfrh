@@ -3,6 +3,8 @@ import EventListDisplay from "../../components/ui/events/EventListDisplay";
 import { fetchApi } from "../../utils/api/fetch-api";
 import { TEvents } from "../api/events/types";
 import { TNewsLetter } from "../api/newsletters/types";
+import _ from "lodash";
+import NewsLetterDisplay from "../../components/ui/newsletter/NewsLetterDisplay";
 
 interface ArticlesPageProps {
   events: TEvents[];
@@ -11,13 +13,14 @@ interface ArticlesPageProps {
 
 const Articles: React.FC<ArticlesPageProps> = (props) => {
   const { events, newsletters } = props;
+  const newsLetterToDisplay = newsletters[0] || null;
 
   return (
     <>
       <EventListDisplay events={events} />
-      <Container maxW="container.2lg" my="2.125rem">
-        <Text>Articles</Text>
-      </Container>
+      {newsLetterToDisplay && (
+        <NewsLetterDisplay newsletter={newsLetterToDisplay} />
+      )}
     </>
   );
 };

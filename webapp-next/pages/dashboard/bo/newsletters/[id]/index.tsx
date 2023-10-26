@@ -82,7 +82,6 @@ const NewsLetterCreate = () => {
   const validate = async (
     tmpNewsLetter: TNewsLetterCreationPayload | TNewsLetterUpdatePayload
   ) => {
-    console.log("Passe ici", tmpNewsLetter);
     setIsMainPageLoading(true);
     if (selectedRessources.length > 0) {
       tmpNewsLetter.ressources_list = selectedRessources;
@@ -90,7 +89,6 @@ const NewsLetterCreate = () => {
     try {
       if (id === "new") {
         fetchApi.post("/api/newsletters/create", tmpNewsLetter).then((res) => {
-          console.log("res", res);
           router.push("/dashboard/bo/newsletters");
         });
       } else {
@@ -245,9 +243,7 @@ const NewsLetterCreate = () => {
     [{ color: [] }, { background: [] }], // dropdown with defaults from theme
     [{ font: [] }],
     [{ align: [] }],
-
     ["link", "image"],
-
     ["clean"], // remove formatting button
   ];
 

@@ -31,8 +31,8 @@ import dynamic from "next/dynamic";
 import DragNDropComponent from "../../../../../components/bo/usecases/dragndrop";
 import RessourceCard from "../../../../../components/ui/ressources/ressource-card";
 import { AiFillCloseCircle } from "react-icons/ai";
-
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import axios from "axios";
+import { getJwt } from "../../../../../utils/globals/cookies";
 
 export type TSelectedRessource = {
   position: number;
@@ -54,6 +54,65 @@ const NewsLetterCreate = () => {
   const [hoveredCardId, setHoveredCardId] = React.useState<number>();
 
   const toast = useToast();
+
+  const toolbarOptions = [
+    ["bold", "italic", "underline", "strike"], // toggled buttons
+    ["blockquote"],
+    [{ header: 1 }, { header: 2 }], // custom button values
+    [{ list: "ordered" }, { list: "bullet" }],
+
+    [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+    [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+    [{ font: [] }],
+    [{ align: [] }],
+    ["link", "image"],
+    ["clean"], // remove formatting button
+  ];
+
+  const jwt = getJwt();
+
+  const handleImageUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append("files", file);
+
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_STRAPI_URL}/upload`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      }
+    );
+
+    return `${process.env.NEXT_PUBLIC_STRAPI_URL}${res.data[0].url}`;
+  };
+
+  //Initiate bottom Editor for external content due to NextJS SSR Constraints with Quill
+  const [editorLoaded, setEditorLoaded] = React.useState<boolean>(false);
+  const ReactQuill = React.useMemo(
+    () => dynamic(() => import("react-quill"), { ssr: false }),
+    []
+  );
+  const modules = React.useRef<any>();
+
+  React.useEffect(() => {
+    (async () => {
+      const quill = await import("react-quill");
+      const ImageUploader = await import("quill-image-uploader");
+      quill.default.Quill.register(
+        "modules/imageUploader",
+        ImageUploader.default
+      );
+      modules.current = {
+        toolbar: toolbarOptions,
+        imageUploader: {
+          upload: (file: File) => handleImageUpload(file),
+        },
+      };
+      setEditorLoaded(true);
+    })();
+  }, []);
 
   let initialValues: TNewsLetterCreationPayload | TNewsLetterUpdatePayload = {
     title: "",
@@ -233,20 +292,6 @@ const NewsLetterCreate = () => {
     );
   };
 
-  const toolbarOptions = [
-    ["bold", "italic", "underline", "strike"], // toggled buttons
-    ["blockquote"],
-    [{ header: 1 }, { header: 2 }], // custom button values
-    [{ list: "ordered" }, { list: "bullet" }],
-
-    [{ size: ["small", false, "large", "huge"] }], // custom dropdown
-    [{ color: [] }, { background: [] }], // dropdown with defaults from theme
-    [{ font: [] }],
-    [{ align: [] }],
-    ["link", "image"],
-    ["clean"], // remove formatting button
-  ];
-
   if ((id !== "new" && !newsLetter) || isMainPageLoading) return <Loader />;
 
   return (
@@ -319,12 +364,14 @@ const NewsLetterCreate = () => {
                       >
                         {({ field }: any) => (
                           <Box my={2}>
-                            <ReactQuill
-                              preserveWhitespace={true}
-                              theme="snow"
-                              onChange={field.onChange(field.name)}
-                              value={formik.values.description}
-                            />
+                            {editorLoaded && (
+                              <ReactQuill
+                                preserveWhitespace={true}
+                                theme="snow"
+                                onChange={field.onChange(field.name)}
+                                value={formik.values.description}
+                              />
+                            )}
                           </Box>
                         )}
                       </Field>
@@ -404,13 +451,15 @@ const NewsLetterCreate = () => {
                       >
                         {({ field }: any) => (
                           <Box my={2}>
-                            <ReactQuill
-                              preserveWhitespace={true}
-                              theme="snow"
-                              modules={{ toolbar: toolbarOptions }}
-                              onChange={field.onChange(field.name)}
-                              value={formik.values.external_content}
-                            />
+                            {editorLoaded && (
+                              <ReactQuill
+                                preserveWhitespace={true}
+                                theme="snow"
+                                modules={modules.current}
+                                onChange={field.onChange(field.name)}
+                                value={formik.values.external_content}
+                              />
+                            )}
                           </Box>
                         )}
                       </Field>

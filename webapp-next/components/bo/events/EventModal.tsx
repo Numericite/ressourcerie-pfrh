@@ -13,7 +13,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Text,
   useToast,
   VStack,
 } from "@chakra-ui/react";

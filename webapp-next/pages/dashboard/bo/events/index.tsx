@@ -1,5 +1,4 @@
 import { Box, Button, Heading, useToast } from "@chakra-ui/react";
-import { useRouter } from "next/router";
 import React from "react";
 import { fetchApi } from "../../../../utils/api/fetch-api";
 import { TEvents } from "../../../api/events/types";
@@ -22,18 +21,30 @@ const EventsManager = () => {
 
   const [currentEvent, setCurrentEvent] = React.useState<any>(null);
 
+  const [filterDate, setFilterDate] = React.useState<string>(
+    new Date().toISOString().split("T")[0]
+  );
   const calendarRef = React.useRef<any>(null);
+
+  const handleDateChange = (dateInfo: any) => {
+    const { startStr } = dateInfo;
+    setFilterDate(startStr.split("T")[0]);
+  };
+
+  React.useEffect(() => {
+    retrieveEvents();
+  }, [filterDate]);
 
   const retrieveEvents = async () => {
     const events = await fetchApi
       .get("/api/events/list", {
         pagination: {
           page: 1,
-          pageSize: 20,
+          pageSize: 100,
         },
         filters: {
           start_date: {
-            $gte: new Date().toISOString().split("T")[0],
+            $gte: filterDate,
           },
         },
       })
@@ -105,8 +116,6 @@ const EventsManager = () => {
       }
     });
   };
-
-  const router = useRouter();
 
   const handleDeleteEvent = () => {
     return fetchApi
@@ -208,6 +217,7 @@ const EventsManager = () => {
           month: "Mois",
         }}
         titleFormat={{ year: "numeric", month: "long" }}
+        datesSet={handleDateChange}
         eventContent={(eventInfo) => {
           return (
             <EventCard event={eventInfo.event} currentEvent={currentEvent} />
@@ -219,6 +229,7 @@ const EventsManager = () => {
           const { start: OldDate } = info.oldEvent;
           onDragEnd(title, OldDate, newStartDate, newEndDate);
         }}
+        rerenderDelay={10}
       />
     </Box>
   );

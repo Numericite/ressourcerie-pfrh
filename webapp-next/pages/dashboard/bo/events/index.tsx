@@ -21,14 +21,18 @@ const EventsManager = () => {
 
   const [currentEvent, setCurrentEvent] = React.useState<any>(null);
 
-  const [filterDate, setFilterDate] = React.useState<string>(
-    new Date().toISOString().split("T")[0]
-  );
+  const [filterDate, setFilterDate] = React.useState<{
+    $gte: string;
+    $lte: string;
+  }>();
   const calendarRef = React.useRef<any>(null);
 
   const handleDateChange = (dateInfo: any) => {
-    const { startStr } = dateInfo;
-    setFilterDate(startStr.split("T")[0]);
+    const { startStr, endStr } = dateInfo;
+    setFilterDate({
+      $gte: startStr,
+      $lte: endStr,
+    });
   };
 
   React.useEffect(() => {
@@ -44,7 +48,8 @@ const EventsManager = () => {
         },
         filters: {
           start_date: {
-            $gte: filterDate,
+            $gte: filterDate && filterDate.$gte,
+            $lte: filterDate && filterDate.$lte,
           },
         },
       })
@@ -53,10 +58,6 @@ const EventsManager = () => {
       });
     setEventsList(events);
   };
-
-  React.useEffect(() => {
-    retrieveEvents();
-  }, []);
 
   const formatEvents = () => {
     if (!eventsList) return;

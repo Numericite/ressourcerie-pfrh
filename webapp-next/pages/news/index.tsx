@@ -5,6 +5,9 @@ import { TEvents } from "../api/events/types";
 import { TNewsLetter } from "../api/newsletters/types";
 import _ from "lodash";
 import NewsLetterDisplay from "../../components/ui/newsletter/NewsLetterDisplay";
+import NewsLetterList from "../../components/ui/newsletter/NewsLetterList";
+import React from "react";
+import Loader from "../../components/ui/loader";
 
 interface ArticlesPageProps {
   events: TEvents[];
@@ -13,13 +16,33 @@ interface ArticlesPageProps {
 
 const Articles: React.FC<ArticlesPageProps> = (props) => {
   const { events, newsletters } = props;
-  const newsLetterToDisplay = newsletters[0] || null;
+  const [newsLetterToDisplay, setNewsLetterToDisplay] =
+    React.useState<TNewsLetter | null>(newsletters[0] || null);
+  const [loading, setLoading] = React.useState<boolean>(false);
+
+  const handleNewsLetterChange = (newsLetter: TNewsLetter) => {
+    setLoading(true);
+    setNewsLetterToDisplay(newsLetter);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+  };
+
+  if (loading) return <Loader />;
 
   return (
     <>
       <EventListDisplay events={events} />
       {newsLetterToDisplay && (
-        <NewsLetterDisplay newsletter={newsLetterToDisplay} />
+        <>
+          <NewsLetterDisplay newsletter={newsLetterToDisplay} />
+          <NewsLetterList
+            newsletters={newsletters.filter(
+              (newsletter) => newsletter !== newsLetterToDisplay
+            )}
+            handleNewsLetterChange={handleNewsLetterChange}
+          />
+        </>
       )}
     </>
   );

@@ -78,26 +78,12 @@ const MoreActualities = (props: Props) => {
           domNode.children[0].name === "img"
         ) {
           return (
-            <Box
-              style={
-                domNode.children[0].attribs.style
-                  ? cssStringToObject(domNode.children[0].attribs.style)
-                  : {}
-              }
-              width={`${domNode.children[0].attribs.width}px`}
-            >
-              <Image
-                borderRadius="xl"
-                src={domNode.children[0].attribs.src}
-                alt={domNode.children[0].attribs.alt}
-              />
-            </Box>
-          );
-        } else {
-          return (
             <Text color="neutralDark">{domToReact(domNode.children)}</Text>
           );
         }
+      }
+      if (domNode instanceof Element && domNode.name === "blockquote") {
+        return <Text color="neutralDark">{domToReact(domNode.children)}</Text>;
       }
       if (domNode instanceof Element && domNode.name === "ul") {
         return (

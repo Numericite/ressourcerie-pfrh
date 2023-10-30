@@ -1,4 +1,4 @@
-import { Box, Container, Text } from "@chakra-ui/react";
+import { Box, Container, Flex, Heading, Text } from "@chakra-ui/react";
 import EventListDisplay from "../../components/ui/events/EventListDisplay";
 import { fetchApi } from "../../utils/api/fetch-api";
 import { TEvents } from "../api/events/types";
@@ -17,7 +17,7 @@ interface ArticlesPageProps {
 const Articles: React.FC<ArticlesPageProps> = (props) => {
   const { events, newsletters } = props;
   const [newsLetterToDisplay, setNewsLetterToDisplay] =
-    React.useState<TNewsLetter | null>(newsletters[0] || null);
+    React.useState<TNewsLetter | null>(newsletters ? newsletters[0] : null);
   const [loading, setLoading] = React.useState<boolean>(false);
 
   const handleNewsLetterChange = (newsLetter: TNewsLetter) => {
@@ -33,7 +33,7 @@ const Articles: React.FC<ArticlesPageProps> = (props) => {
   return (
     <>
       <EventListDisplay events={events} />
-      {newsLetterToDisplay && (
+      {newsLetterToDisplay ? (
         <>
           <NewsLetterDisplay newsletter={newsLetterToDisplay} />
           <NewsLetterList
@@ -43,6 +43,15 @@ const Articles: React.FC<ArticlesPageProps> = (props) => {
             handleNewsLetterChange={handleNewsLetterChange}
           />
         </>
+      ) : (
+        <Container maxW="container.2lg" py="2.125rem" textAlign={"center"}>
+          <Heading fontSize={"xl"} as="h3" fontWeight="bold">
+            Aucune newsletter disponible pour le moment !
+          </Heading>
+          <Text>
+            N&apos;hésitez pas à revenir plus tard. L&apos;équipe PFRH
+          </Text>
+        </Container>
       )}
     </>
   );

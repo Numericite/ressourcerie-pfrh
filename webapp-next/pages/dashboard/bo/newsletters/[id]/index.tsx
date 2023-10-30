@@ -178,7 +178,6 @@ const NewsLetterCreate = () => {
 
   const validationSchema = yup.object().shape({
     title: yup.string().required("Le titre est requis"),
-    description: yup.string().required("Le contenu est requis"),
     ressources_list: yup.array().required("Les ressources sont requises"),
   });
 

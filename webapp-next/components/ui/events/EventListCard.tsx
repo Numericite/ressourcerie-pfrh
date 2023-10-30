@@ -1,6 +1,6 @@
 import { Box, Flex, HStack, Text, Link } from "@chakra-ui/react";
 import { BiExport } from "react-icons/bi";
-import { FiCalendar } from "react-icons/fi";
+import { FiCalendar, FiExternalLink } from "react-icons/fi";
 import { TEvents } from "../../../pages/api/events/types";
 import { formatDateToFrenchString } from "../../../utils/tools";
 
@@ -45,7 +45,7 @@ const EventListCard = (props: EventListCardProps) => {
         </HStack>
         <Link href={event.external_link as string} target={"_blank"}>
           <Flex alignItems={"center"}>
-            <BiExport color="#78D8C7" />
+            <FiExternalLink color="#78D8C7" />
             <Text ml={1} color="primary" textDecoration={"underline"}>
               En savoir plus
             </Text>

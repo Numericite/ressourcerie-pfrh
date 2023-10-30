@@ -1,10 +1,13 @@
-import { Box, Container, Text } from "@chakra-ui/react";
+import { Box, Container, Flex, Heading, Text } from "@chakra-ui/react";
 import EventListDisplay from "../../components/ui/events/EventListDisplay";
 import { fetchApi } from "../../utils/api/fetch-api";
 import { TEvents } from "../api/events/types";
 import { TNewsLetter } from "../api/newsletters/types";
 import _ from "lodash";
 import NewsLetterDisplay from "../../components/ui/newsletter/NewsLetterDisplay";
+import NewsLetterList from "../../components/ui/newsletter/NewsLetterList";
+import React from "react";
+import Loader from "../../components/ui/loader";
 
 interface ArticlesPageProps {
   events: TEvents[];
@@ -13,13 +16,42 @@ interface ArticlesPageProps {
 
 const Articles: React.FC<ArticlesPageProps> = (props) => {
   const { events, newsletters } = props;
-  const newsLetterToDisplay = newsletters[0] || null;
+  const [newsLetterToDisplay, setNewsLetterToDisplay] =
+    React.useState<TNewsLetter | null>(newsletters ? newsletters[0] : null);
+  const [loading, setLoading] = React.useState<boolean>(false);
+
+  const handleNewsLetterChange = (newsLetter: TNewsLetter) => {
+    setLoading(true);
+    setNewsLetterToDisplay(newsLetter);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+  };
+
+  if (loading) return <Loader />;
 
   return (
     <>
       <EventListDisplay events={events} />
-      {newsLetterToDisplay && (
-        <NewsLetterDisplay newsletter={newsLetterToDisplay} />
+      {newsLetterToDisplay ? (
+        <>
+          <NewsLetterDisplay newsletter={newsLetterToDisplay} />
+          <NewsLetterList
+            newsletters={newsletters.filter(
+              (newsletter) => newsletter !== newsLetterToDisplay
+            )}
+            handleNewsLetterChange={handleNewsLetterChange}
+          />
+        </>
+      ) : (
+        <Container maxW="container.2lg" py="2.125rem" textAlign={"center"}>
+          <Heading fontSize={"xl"} as="h3" fontWeight="bold">
+            Aucune newsletter disponible pour le moment !
+          </Heading>
+          <Text>
+            N&apos;hésitez pas à revenir plus tard. L&apos;équipe PFRH
+          </Text>
+        </Container>
       )}
     </>
   );

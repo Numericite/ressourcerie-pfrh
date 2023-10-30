@@ -13,7 +13,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Text,
   useToast,
   VStack,
 } from "@chakra-ui/react";
@@ -29,6 +28,7 @@ type EventModalProps = {
   open: boolean;
   onClose: () => void;
   onDelete: () => void;
+  retrieveEvents: () => void;
 };
 
 const EventModal = (props: EventModalProps) => {
@@ -75,7 +75,7 @@ const EventModal = (props: EventModalProps) => {
             isClosable: true,
           });
           props.onClose();
-          router.reload();
+          props.retrieveEvents();
         })
         .catch((err) => {
           toast({
@@ -110,7 +110,7 @@ const EventModal = (props: EventModalProps) => {
           });
 
           props.onClose();
-          router.reload();
+          props.retrieveEvents();
         })
         .catch((err) => {
           toast({

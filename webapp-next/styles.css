@@ -1,0 +1,12 @@
+.fc-button-primary {
+  background: #78d8c7 !important;
+  border-color: #fff !important;
+}
+
+.fc-button-primary:hover {
+  background: linear-gradient(270deg, #97f8b1 0%, #2f6cff 100%) !important;
+}
+
+.fc-button-primary:focus {
+  box-shadow: none !important;
+}

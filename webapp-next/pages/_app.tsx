@@ -13,6 +13,7 @@ import "@fontsource/poppins";
 import Fonts from "../components/ui/fonts";
 import PrivateLayout from "../layouts/PrivateLayout";
 import Head from "next/head";
+import "../styles.css";
 
 const NEXT_PUBLIC_JWT_STORAGE_KEY: string = process.env
   .NEXT_PUBLIC_JWT_STORAGE_KEY as string;
@@ -53,7 +54,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     <AppContext.Provider value={contextValue}>
       <ChakraProvider theme={theme}>
         <Head>
-          <html lang="fr" />
           <style data-fullcalendar>
             {`
               html {

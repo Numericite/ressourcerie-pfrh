@@ -31,8 +31,8 @@ import dynamic from "next/dynamic";
 import DragNDropComponent from "../../../../../components/bo/usecases/dragndrop";
 import RessourceCard from "../../../../../components/ui/ressources/ressource-card";
 import { AiFillCloseCircle } from "react-icons/ai";
-
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import axios from "axios";
+import { getJwt } from "../../../../../utils/globals/cookies";
 
 export type TSelectedRessource = {
   position: number;
@@ -55,6 +55,109 @@ const NewsLetterCreate = () => {
 
   const toast = useToast();
 
+  const toolbarOptions = [
+    ["bold", "italic", "underline", "strike"], // toggled buttons
+    ["blockquote"],
+    [{ header: 1 }, { header: 2 }], // custom button values
+    [{ list: "ordered" }, { list: "bullet" }],
+
+    [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+    [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+    [{ font: [] }],
+    [{ align: [] }],
+    ["link", "image"],
+    ["clean"], // remove formatting button
+  ];
+
+  const jwt = getJwt();
+
+  const handleImageUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append("files", file);
+
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_STRAPI_URL}/upload`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      }
+    );
+
+    return `${process.env.NEXT_PUBLIC_STRAPI_URL}${res.data[0].url}`;
+  };
+
+  //Initiate bottom Editor for external content due to NextJS SSR Constraints with Quill. So we use this useEffect in order to load Quill only when document is defined on client side.
+  const [editorLoaded, setEditorLoaded] = React.useState<boolean>(false);
+  const ReactQuill = React.useMemo(
+    () => dynamic(() => import("react-quill"), { ssr: false }),
+    []
+  );
+  const modules = React.useRef<any>();
+  const formats = React.useRef<any>([
+    "header",
+    "font",
+    "size",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "image",
+    "video",
+    "color",
+    "background",
+    "align",
+  ]);
+
+  React.useEffect(() => {
+    (async () => {
+      const quill = await import("react-quill");
+      const ImageUploader = await import("quill-image-uploader");
+      const ImageResize = await import("quill-image-resize-module-react");
+      quill.default.Quill.register(
+        "modules/imageUploader",
+        ImageUploader.default
+      );
+      quill.default.Quill.register("modules/imageResize", ImageResize.default);
+      formats.current = [
+        "header",
+        "font",
+        "size",
+        "bold",
+        "italic",
+        "underline",
+        "strike",
+        "blockquote",
+        "list",
+        "bullet",
+        "indent",
+        "link",
+        "image",
+        "video",
+        "color",
+        "background",
+        "align",
+      ];
+      modules.current = {
+        toolbar: toolbarOptions,
+        imageUploader: {
+          upload: (file: File) => handleImageUpload(file),
+        },
+        imageResize: {
+          modules: ["Resize", "Toolbar"],
+          parchment: quill.default.Quill.import("parchment"),
+        },
+      };
+      setEditorLoaded(true);
+    })();
+  }, []);
+
   let initialValues: TNewsLetterCreationPayload | TNewsLetterUpdatePayload = {
     title: "",
     description: "",
@@ -75,7 +178,6 @@ const NewsLetterCreate = () => {
 
   const validationSchema = yup.object().shape({
     title: yup.string().required("Le titre est requis"),
-    description: yup.string().required("Le contenu est requis"),
     ressources_list: yup.array().required("Les ressources sont requises"),
   });
 
@@ -233,20 +335,6 @@ const NewsLetterCreate = () => {
     );
   };
 
-  const toolbarOptions = [
-    ["bold", "italic", "underline", "strike"], // toggled buttons
-    ["blockquote"],
-    [{ header: 1 }, { header: 2 }], // custom button values
-    [{ list: "ordered" }, { list: "bullet" }],
-
-    [{ size: ["small", false, "large", "huge"] }], // custom dropdown
-    [{ color: [] }, { background: [] }], // dropdown with defaults from theme
-    [{ font: [] }],
-    [{ align: [] }],
-    ["link", "image"],
-    ["clean"], // remove formatting button
-  ];
-
   if ((id !== "new" && !newsLetter) || isMainPageLoading) return <Loader />;
 
   return (
@@ -302,41 +390,28 @@ const NewsLetterCreate = () => {
                         {formik.errors.title as string}
                       </FormErrorMessage>
                     </FormControl>
-                    <FormControl
-                      isRequired={true}
-                      isInvalid={
-                        !!formik.errors.description &&
-                        (formik.touched.description as boolean)
-                      }
-                    >
+                    <FormControl isRequired={false}>
                       <FormLabel htmlFor="description">
-                        Accroche de la newsletter
+                        Sous titre de la newsletter
                       </FormLabel>
-                      <Field
-                        touched={formik.touched.description}
+                      <Input
+                        w="full"
+                        id="description"
                         name="description"
+                        type="text"
                         onBlur={formik.handleBlur}
-                      >
-                        {({ field }: any) => (
-                          <Box my={2}>
-                            <ReactQuill
-                              preserveWhitespace={true}
-                              theme="snow"
-                              onChange={field.onChange(field.name)}
-                              value={formik.values.description}
-                            />
-                          </Box>
-                        )}
-                      </Field>
+                        onChange={formik.handleChange}
+                        value={formik.values.description}
+                      />
                       <FormErrorMessage>
                         {formik.errors.description as string}
                       </FormErrorMessage>
                     </FormControl>
-                    <Button
-                      size="sm"
-                      onClick={() => setIsModalVisible(true)}
-                      variant="solid"
-                    >
+                    <Text>
+                      Sélectionnez les ressources à afficher dans la newsletter
+                      :{" "}
+                    </Text>
+                    <Button size="sm" onClick={() => setIsModalVisible(true)}>
                       {selectedRessources?.length > 0
                         ? "Modifier les ressources"
                         : "Ajouter une ressource"}
@@ -402,17 +477,22 @@ const NewsLetterCreate = () => {
                         name="external_content"
                         onBlur={formik.handleBlur}
                       >
-                        {({ field }: any) => (
-                          <Box my={2}>
-                            <ReactQuill
-                              preserveWhitespace={true}
-                              theme="snow"
-                              modules={{ toolbar: toolbarOptions }}
-                              onChange={field.onChange(field.name)}
-                              value={formik.values.external_content}
-                            />
-                          </Box>
-                        )}
+                        {({ field }: any) =>
+                          field.name && (
+                            <Box my={2}>
+                              {editorLoaded && (
+                                <ReactQuill
+                                  preserveWhitespace={true}
+                                  theme="snow"
+                                  modules={modules.current}
+                                  formats={formats.current}
+                                  onChange={field.onChange(field.name)}
+                                  value={formik.values.external_content}
+                                />
+                              )}
+                            </Box>
+                          )
+                        }
                       </Field>
                       <FormErrorMessage>
                         {formik.errors.external_content as string}

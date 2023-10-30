@@ -3,7 +3,6 @@ import Image from "next/image";
 import { TNewsLetter } from "../../../pages/api/newsletters/types";
 import { TRessource } from "../../../pages/api/ressources/types";
 import { displayMonthYear } from "../../../utils/tools";
-import RessourceSimilar from "../ressources/ressource-similar";
 import MoreActualities from "./MoreActualities";
 import RessourceNewsletterDisplay from "./RessourceNewsLetterDisplay";
 

@@ -99,15 +99,6 @@ const MoreActualities = (props: Props) => {
           );
         }
       }
-      if (domNode instanceof Element && domNode.name === "img") {
-        return (
-          <Image
-            borderRadius="xl"
-            src={domNode.attribs.src}
-            alt={domNode.attribs.alt}
-          />
-        );
-      }
       if (domNode instanceof Element && domNode.name === "ul") {
         return (
           <UnorderedList pl={4}>
@@ -142,6 +133,7 @@ const MoreActualities = (props: Props) => {
         return (
           <Link
             as="a"
+            fontWeight={600}
             href={domNode.attribs.href}
             color="primary"
             target={"_blank"}

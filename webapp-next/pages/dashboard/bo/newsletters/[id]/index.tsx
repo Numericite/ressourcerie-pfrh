@@ -95,6 +95,25 @@ const NewsLetterCreate = () => {
     []
   );
   const modules = React.useRef<any>();
+  const formats = React.useRef<any>([
+    "header",
+    "font",
+    "size",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "image",
+    "video",
+    "color",
+    "background",
+    "align",
+  ]);
 
   React.useEffect(() => {
     (async () => {
@@ -106,13 +125,32 @@ const NewsLetterCreate = () => {
         ImageUploader.default
       );
       quill.default.Quill.register("modules/imageResize", ImageResize.default);
+      formats.current = [
+        "header",
+        "font",
+        "size",
+        "bold",
+        "italic",
+        "underline",
+        "strike",
+        "blockquote",
+        "list",
+        "bullet",
+        "indent",
+        "link",
+        "image",
+        "video",
+        "color",
+        "background",
+        "align",
+      ];
       modules.current = {
         toolbar: toolbarOptions,
         imageUploader: {
           upload: (file: File) => handleImageUpload(file),
         },
         imageResize: {
-          modules: ["Resize", "DisplaySize", "Toolbar"],
+          modules: ["Resize", "Toolbar"],
           parchment: quill.default.Quill.import("parchment"),
         },
       };
@@ -440,19 +478,22 @@ const NewsLetterCreate = () => {
                         name="external_content"
                         onBlur={formik.handleBlur}
                       >
-                        {({ field }: any) => (
-                          <Box my={2}>
-                            {editorLoaded && (
-                              <ReactQuill
-                                preserveWhitespace={true}
-                                theme="snow"
-                                modules={modules.current}
-                                onChange={field.onChange(field.name)}
-                                value={formik.values.external_content}
-                              />
-                            )}
-                          </Box>
-                        )}
+                        {({ field }: any) =>
+                          field.name && (
+                            <Box my={2}>
+                              {editorLoaded && (
+                                <ReactQuill
+                                  preserveWhitespace={true}
+                                  theme="snow"
+                                  modules={modules.current}
+                                  formats={formats.current}
+                                  onChange={field.onChange(field.name)}
+                                  value={formik.values.external_content}
+                                />
+                              )}
+                            </Box>
+                          )
+                        }
                       </Field>
                       <FormErrorMessage>
                         {formik.errors.external_content as string}

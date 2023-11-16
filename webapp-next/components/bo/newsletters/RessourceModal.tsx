@@ -1,7 +1,5 @@
 import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import {
-  Box,
-  Heading,
   Modal,
   ModalBody,
   ModalContent,
@@ -26,6 +24,8 @@ import { TRessource } from "../../../pages/api/ressources/types";
 import { TSelectedRessource } from "../../../pages/dashboard/bo/newsletters/[id]";
 import IconPlaceHolder from "../../ui/icon-placeholder";
 import Loader from "../../ui/loader";
+import SearchBar from "../../ui/searchbar";
+import { FormEvent } from "react";
 
 interface RessourceModalProps {
   isModalVisible: boolean | undefined;
@@ -36,6 +36,7 @@ interface RessourceModalProps {
   page: number;
   handlePagination: (page: number) => void;
   loading?: boolean;
+  onSearch: (search: FormEvent<HTMLInputElement>) => void;
 }
 
 const RessourceModal = (props: RessourceModalProps) => {
@@ -48,6 +49,7 @@ const RessourceModal = (props: RessourceModalProps) => {
     page,
     handlePagination,
     loading,
+    onSearch,
   } = props;
 
   const tablehead = ["", "Nom", "Type", "Theme"];
@@ -63,7 +65,17 @@ const RessourceModal = (props: RessourceModalProps) => {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          Selectionnez les ressources à ajouter à la newsletter
+          <Flex align="center" justify={"space-around"}>
+            Selectionnez les ressources à ajouter à la newsletter
+            {
+              <SearchBar
+                w={"30%"}
+                placeholder="Recherchez une ressource ..."
+                onSearch={onSearch}
+                size="sm"
+              />
+            }
+          </Flex>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody mt={[0, 10]}>

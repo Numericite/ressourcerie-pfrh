@@ -33,6 +33,7 @@ import RessourceCard from "../../../../../components/ui/ressources/ressource-car
 import { AiFillCloseCircle } from "react-icons/ai";
 import axios from "axios";
 import { getJwt } from "../../../../../utils/globals/cookies";
+import { useDebounce } from "usehooks-ts";
 
 export type TSelectedRessource = {
   position: number;
@@ -52,6 +53,8 @@ const NewsLetterCreate = () => {
   >([]);
   const [page, setPage] = React.useState<number>(1);
   const [hoveredCardId, setHoveredCardId] = React.useState<number>();
+  const [search, setSearch] = React.useState<string>("");
+  const debounceSearch = useDebounce(search, 700);
 
   const toast = useToast();
 
@@ -247,6 +250,7 @@ const NewsLetterCreate = () => {
           sort: {
             createdAt: "desc",
           },
+          _q: search,
         })
         .then((res) => {
           setRessources(res.data);
@@ -261,7 +265,7 @@ const NewsLetterCreate = () => {
     if (isModalVisible) {
       fetchRessources();
     }
-  }, [isModalVisible, page]);
+  }, [isModalVisible, page, debounceSearch]);
 
   React.useEffect(() => {
     if (id && id !== "new") {
@@ -310,6 +314,10 @@ const NewsLetterCreate = () => {
       };
     });
     setSelectedRessources(adjustedItems);
+  };
+
+  const handleSearch = (e: React.FormEvent<HTMLInputElement>) => {
+    setSearch(e.currentTarget.value);
   };
 
   const displayDeleteButton = (item: TRessource) => {
@@ -428,6 +436,9 @@ const NewsLetterCreate = () => {
                         }
                         handleSelectedRessources={handleSelectedRessources}
                         handlePagination={handlePagination}
+                        onSearch={(e) => {
+                          handleSearch(e);
+                        }}
                       />
                     )}
                     {selectedRessources.length > 0 && (

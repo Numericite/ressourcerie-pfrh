@@ -25,7 +25,7 @@ const NewsLetterList = (props: Props) => {
 
   return (
     <Box bg="#FAFFFD">
-      <Container maxW="container.2lg" py="2.125rem">
+      <Container maxW="container.2lg" py="0.125rem">
         <Heading as="h3" fontSize={["xl", "2xl"]} mb="1.5rem">
           Newsletters précédentes
         </Heading>
@@ -42,7 +42,7 @@ const NewsLetterList = (props: Props) => {
                 w="fit-content"
                 h="full"
                 borderRadius={"xl"}
-                p={3}
+                p={1}
                 _hover={{
                   bgGradient:
                     "linear(to-tr, rgba(47, 108, 255, 0.05),rgba(151, 248, 177, 0.05))",

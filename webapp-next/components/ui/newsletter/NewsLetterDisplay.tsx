@@ -20,7 +20,7 @@ const NewsLetterDisplay = (props: NewsLetterDisplayProps) => {
   });
 
   return (
-    <Box minW="full">
+    <Box minW="full" minH="fit-content">
       <Flex>
         <Container maxW="container.2lg" my="2.125rem">
           <HStack display={"flex"} justify="center" align={"center"}>
@@ -30,15 +30,20 @@ const NewsLetterDisplay = (props: NewsLetterDisplayProps) => {
               height={70}
               alt="newsletter_pfrh_icon"
             />
-            <Heading
-              as="h2"
-              fontSize={["xl", "2xl"]}
-              mb="1.5rem"
-              textAlign={"center"}
-            >
-              {newsletter.title} -{" "}
-              {displayMonthYear(newsletter.createdAt as string)}
-            </Heading>
+            <Flex flexDir={"column"}>
+              <Heading
+                as="h2"
+                fontSize={["xl", "2xl"]}
+                mb="1.5rem"
+                textAlign={"center"}
+              >
+                {newsletter.title} -{" "}
+                {displayMonthYear(newsletter.createdAt as string)}
+              </Heading>
+              <Heading as="h3" fontSize={["lg", "xl"]}>
+                {newsletter.description}
+              </Heading>
+            </Flex>
           </HStack>
         </Container>
       </Flex>

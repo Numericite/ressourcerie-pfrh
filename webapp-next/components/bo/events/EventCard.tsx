@@ -1,5 +1,4 @@
-import { Collapse, Flex, Tag, Text } from "@chakra-ui/react";
-import Link from "next/link";
+import { Flex, Tag, Text } from "@chakra-ui/react";
 
 const EventCard = ({ event, currentEvent }: any) => {
   return (

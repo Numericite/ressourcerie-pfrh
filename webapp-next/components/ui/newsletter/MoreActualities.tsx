@@ -133,7 +133,7 @@ const MoreActualities = (props: Props) => {
   };
 
   return (
-    <Container maxW="container.2lg" my="2.125rem">
+    <Container maxW="container.2lg" my="2.125rem" minH="fit-content">
       <Heading as="h2" fontSize="2xl" mb="1.5rem">
         Mais aussi...
       </Heading>

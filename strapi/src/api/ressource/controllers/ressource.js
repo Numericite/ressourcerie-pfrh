@@ -119,9 +119,30 @@ module.exports = createCoreController("api::ressource.ressource", () => ({
     return strapi.controller("api::ressource.ressource").customFind(ctx);
   },
   async customFind(ctx) {
-    const { data, meta } = await super.find(ctx);
+    try {
+      // Parse filters and populate from query parameters
+      const filters = ctx.query.filters;
+      const populate = ctx.query.populate;
 
-    return baseRessourcesToResponse(data, meta);
+      // Perform the custom find operation with filters and populate
+      const { data, meta } = await super.find({
+        ...ctx,
+        filters: {
+          ...filters,
+        },
+        populate: {
+          ...populate,
+        },
+      });
+
+      // Process the result as needed
+      const responseData = baseRessourcesToResponse(data, meta);
+
+      return responseData;
+    } catch (error) {
+      // Handle errors appropriately
+      throw error;
+    }
   },
   async create(ctx) {
     let fullRessource = ctx.request.body.data;

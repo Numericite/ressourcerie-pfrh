@@ -10,17 +10,19 @@ const retrieveDeepPopulate = async (data, ressource_ids, ressource_list) => {
   const finalNewsletter = await strapi
     .controller("api::ressource.ressource")
     .customFind({
-      filters: {
-        id: {
-          $eq: ressource_ids,
+      query: {
+        filters: {
+          id: {
+            $in: [...ressource_ids],
+          },
         },
-      },
-      populate: {
-        theme: true,
-        image: true,
-        sub_themes: true,
-        personaes: true,
-        personae_occupations: true,
+        populate: {
+          theme: true,
+          image: true,
+          sub_themes: true,
+          personaes: true,
+          personae_occupations: true,
+        },
       },
     })
     .then((ressources) => {
@@ -73,7 +75,7 @@ module.exports = createCoreController("api::newsletter.newsletter", () => ({
     const { data } = await super.findOne(ctx);
 
     let ressource_ids = data.attributes.ressources_list.map(
-      (ressource) => ressource.id
+      (ressource_component) => ressource_component.ressource.data.id
     );
 
     let finalNewsletter = await retrieveDeepPopulate(

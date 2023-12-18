@@ -88,7 +88,7 @@ const BackOffice = () => {
           style={{
             width: "1px",
             minWidth: "100%",
-            height: "1000px",
+            height: "700px",
             overflow: "hidden",
           }}
           id="plausible-embed"

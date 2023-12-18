@@ -2,7 +2,6 @@ import { Box, Container, Heading, SimpleGrid } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { BsBook, BsInboxFill, BsPeople } from "react-icons/bs";
 import HomeCard from "../../../../components/bo/home/home-card";
-import AppContext from "../../../../context/state";
 import { fetchApi } from "../../../../utils/api/fetch-api";
 import { TUser } from "../../../api/users/types";
 
@@ -82,7 +81,7 @@ const BackOffice = () => {
       <Box>
         <iframe
           plausible-embed={"true"}
-          src={process.env.PLAUSIBLE_URL}
+          src={process.env.NEXT_PUBLIC_PLAUSIBLE_URL}
           scrolling="no"
           frameBorder="0"
           loading="lazy"

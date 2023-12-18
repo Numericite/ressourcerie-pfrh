@@ -82,7 +82,7 @@ const BackOffice = () => {
       <Box>
         <iframe
           plausible-embed={"true"}
-          src="https://plausible.numericite.eu/share/ressourcerie-pfrh.numericite.fr?auth=Uld2rc0FSCD62q8OpCVkZ&embed=true&theme=light&background=transparent"
+          src="https://plausible.numericite.eu/ressourcerie-pfrh.numericite.fr?embed=true&theme=light&background=transparent"
           scrolling="no"
           frameBorder="0"
           loading="lazy"

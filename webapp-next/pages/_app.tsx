@@ -14,6 +14,7 @@ import Fonts from "../components/ui/fonts";
 import PrivateLayout from "../layouts/PrivateLayout";
 import Head from "next/head";
 import "../styles.css";
+import PlausibleProvider from "next-plausible";
 
 const NEXT_PUBLIC_JWT_STORAGE_KEY: string = process.env
   .NEXT_PUBLIC_JWT_STORAGE_KEY as string;
@@ -52,10 +53,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <AppContext.Provider value={contextValue}>
-      <ChakraProvider theme={theme}>
-        <Head>
-          <style data-fullcalendar>
-            {`
+      <PlausibleProvider domain="https://ressourcerie-pfrh.numericite.fr">
+        <ChakraProvider theme={theme}>
+          <Head>
+            <style data-fullcalendar>
+              {`
               html {
                 scroll-behavior: smooth;
               }
@@ -65,11 +67,14 @@ function MyApp({ Component, pageProps }: AppProps) {
                 min-height: 15rem;
               }
               `}
-          </style>
-        </Head>
-        <Fonts />
-        <ModalProvider>{getLayout(<Component {...pageProps} />)}</ModalProvider>
-      </ChakraProvider>
+            </style>
+          </Head>
+          <Fonts />
+          <ModalProvider>
+            {getLayout(<Component {...pageProps} />)}
+          </ModalProvider>
+        </ChakraProvider>
+      </PlausibleProvider>
     </AppContext.Provider>
   );
 }

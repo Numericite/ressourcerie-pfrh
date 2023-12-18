@@ -65,12 +65,14 @@ module.exports = createCoreController("api::use-case.use-case", () => ({
       return strapi
         .controller("api::ressource.ressource")
         .customFind({
-          filters: {
-            id: { $in: useCase.steps.map((step) => step.ressource.id) },
-          },
-          populate: {
-            theme: true,
-            image: true,
+          query: {
+            filters: {
+              id: { $in: useCase.steps.map((step) => step.ressource.id) },
+            },
+            populate: {
+              theme: true,
+              image: true,
+            },
           },
         })
         .then((ressources) => {
@@ -116,12 +118,14 @@ module.exports = createCoreController("api::use-case.use-case", () => ({
       return strapi
         .controller("api::ressource.ressource")
         .customFind({
-          filters: {
-            id: { $in: step.ressource.id },
-          },
-          populate: {
-            theme: true,
-            image: true,
+          query: {
+            filters: {
+              id: { $in: step.ressource.id },
+            },
+            populate: {
+              theme: true,
+              image: true,
+            },
           },
         })
         .then((ressources) => {

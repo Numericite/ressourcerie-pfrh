@@ -1,6 +1,5 @@
 import { SearchIcon } from "@chakra-ui/icons";
 import { Input, InputGroup, InputRightElement } from "@chakra-ui/react";
-import { SyntheticEvent } from "react";
 import { SearchbarProps } from "./interface";
 
 const UISearchbar = (props: SearchbarProps) => {

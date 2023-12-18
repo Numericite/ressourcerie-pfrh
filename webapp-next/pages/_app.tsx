@@ -53,7 +53,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <AppContext.Provider value={contextValue}>
-      <PlausibleProvider domain="https://ressourcerie-pfrh.numericite.fr">
+      <PlausibleProvider domain="https://plausible.numericite.eu/ressourcerie-pfrh.numericite.fr">
         <ChakraProvider theme={theme}>
           <Head>
             <style data-fullcalendar>

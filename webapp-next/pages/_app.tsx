@@ -53,13 +53,10 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <AppContext.Provider value={contextValue}>
-      <PlausibleProvider
-        domain={process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN as string}
-      >
-        <ChakraProvider theme={theme}>
-          <Head>
-            <style data-fullcalendar>
-              {`
+      <ChakraProvider theme={theme}>
+        <Head>
+          <style data-fullcalendar>
+            {`
               html {
                 scroll-behavior: smooth;
               }
@@ -69,19 +66,16 @@ function MyApp({ Component, pageProps }: AppProps) {
                 min-height: 15rem;
               }
               `}
-            </style>
-            <script
-              defer
-              data-domain="ressourcerie-pfrh.numericite.fr"
-              src="https://plausible.numericite.eu/js/plausible.js"
-            ></script>
-          </Head>
-          <Fonts />
-          <ModalProvider>
-            {getLayout(<Component {...pageProps} />)}
-          </ModalProvider>
-        </ChakraProvider>
-      </PlausibleProvider>
+          </style>
+          <script
+            defer
+            data-domain="https://ressourcerie-pfrh.numericite.fr"
+            src="https://plausible.numericite.eu/js/plausible.js"
+          ></script>
+        </Head>
+        <Fonts />
+        <ModalProvider>{getLayout(<Component {...pageProps} />)}</ModalProvider>
+      </ChakraProvider>
     </AppContext.Provider>
   );
 }

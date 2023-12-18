@@ -93,10 +93,6 @@ const BackOffice = () => {
           }}
           id="plausible-embed"
         ></iframe>
-        <script
-          async
-          src="https://plausible.numericite.eu/js/embed.host.js"
-        ></script>
       </Box>
     </Container>
   );

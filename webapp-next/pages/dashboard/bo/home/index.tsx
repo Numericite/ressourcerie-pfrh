@@ -81,7 +81,7 @@ const BackOffice = () => {
       <Box>
         <iframe
           plausible-embed={"true"}
-          src={process.env.NEXT_PUBLIC_PLAUSIBLE_URL as string}
+          src={process.env.NEXT_PUBLIC_PLAUSIBLE_URL}
           scrolling="no"
           frameBorder="0"
           loading="lazy"

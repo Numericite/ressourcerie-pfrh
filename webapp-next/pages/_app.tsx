@@ -14,7 +14,6 @@ import Fonts from "../components/ui/fonts";
 import PrivateLayout from "../layouts/PrivateLayout";
 import Head from "next/head";
 import "../styles.css";
-import PlausibleProvider from "next-plausible";
 
 const NEXT_PUBLIC_JWT_STORAGE_KEY: string = process.env
   .NEXT_PUBLIC_JWT_STORAGE_KEY as string;
@@ -52,12 +51,11 @@ function MyApp({ Component, pageProps }: AppProps) {
   };
 
   return (
-    <PlausibleProvider domain="ressourcerie-pfrh.numericite.fr">
-      <AppContext.Provider value={contextValue}>
-        <ChakraProvider theme={theme}>
-          <Head>
-            <style data-fullcalendar>
-              {`
+    <AppContext.Provider value={contextValue}>
+      <ChakraProvider theme={theme}>
+        <Head>
+          <style data-fullcalendar>
+            {`
               html {
                 scroll-behavior: smooth;
               }
@@ -67,20 +65,17 @@ function MyApp({ Component, pageProps }: AppProps) {
                 min-height: 15rem;
               }
               `}
-            </style>
-            <script
-              defer
-              data-domain="ressourcerie-pfrh.numericite.fr"
-              src="https://plausible.numericite.eu/js/plausible.js"
-            ></script>
-          </Head>
-          <Fonts />
-          <ModalProvider>
-            {getLayout(<Component {...pageProps} />)}
-          </ModalProvider>
-        </ChakraProvider>
-      </AppContext.Provider>
-    </PlausibleProvider>
+          </style>
+          <script
+            defer
+            data-domain="ressourcerie-pfrh.numericite.fr"
+            src="https://plausible.numericite.eu/js/plausible.js"
+          ></script>
+        </Head>
+        <Fonts />
+        <ModalProvider>{getLayout(<Component {...pageProps} />)}</ModalProvider>
+      </ChakraProvider>
+    </AppContext.Provider>
   );
 }
 

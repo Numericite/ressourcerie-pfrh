@@ -79,6 +79,26 @@ const BackOffice = () => {
           />
         ))}
       </SimpleGrid>
+      <Box>
+        <iframe
+          plausible-embed={"true"}
+          src="https://plausible.numericite.eu/share/ressourcerie-pfrh.numericite.fr?auth=Uld2rc0FSCD62q8OpCVkZ&embed=true&theme=light&background=transparent"
+          scrolling="no"
+          frameBorder="0"
+          loading="lazy"
+          style={{
+            width: "1px",
+            minWidth: "100%",
+            height: "1000px",
+            overflow: "hidden",
+          }}
+          id="plausible-embed"
+        ></iframe>
+        <script
+          async
+          src="https://plausible.numericite.eu/js/embed.host.js"
+        ></script>
+      </Box>
     </Container>
   );
 };

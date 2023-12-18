@@ -68,6 +68,11 @@ function MyApp({ Component, pageProps }: AppProps) {
               }
               `}
             </style>
+            <script
+              defer
+              data-domain="ressourcerie-pfrh.numericite.fr"
+              src="https://plausible.numericite.eu/js/plausible.js"
+            ></script>
           </Head>
           <Fonts />
           <ModalProvider>

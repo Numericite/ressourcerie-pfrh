@@ -79,6 +79,9 @@ const BackOffice = () => {
         ))}
       </SimpleGrid>
       <Box>
+        <Heading as="h2" size="md" mb={5}>
+          Statistiques de visite sur le site
+        </Heading>
         <iframe
           plausible-embed={"true"}
           src={process.env.NEXT_PUBLIC_PLAUSIBLE_URL}

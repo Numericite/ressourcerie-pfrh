@@ -121,23 +121,15 @@ module.exports = createCoreController("api::ressource.ressource", () => ({
   async customFind(ctx) {
     try {
       // Parse filters and populate from query parameters
-      const filters = ctx.query.filters;
-      const populate = ctx.query.populate;
+      ctx.query = {
+        ...ctx.query,
+      };
 
       // Perform the custom find operation with filters and populate
-      const { data, meta } = await super.find({
-        ...ctx,
-        filters: {
-          ...filters,
-        },
-        populate: {
-          ...populate,
-        },
-      });
+      const { data, meta } = await super.find(ctx);
 
       // Process the result as needed
       const responseData = baseRessourcesToResponse(data, meta);
-
       return responseData;
     } catch (error) {
       // Handle errors appropriately
